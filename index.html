@@ -1,1 +1,198 @@
-<script>window.location.href="https://evoiy.com/ref/bsklw";</script>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>متجر الخدمات - SMM Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #ff0000;
+            --dark-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-white: #ffffff;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-white);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid var(--primary-red);
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.2);
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .stat-card h3 { color: var(--primary-red); margin: 0; font-size: 24px; }
+        .stat-card p { margin: 5px 0 0; color: #aaa; }
+
+        .services-title {
+            text-align: right;
+            border-right: 5px solid var(--primary-red);
+            padding-right: 15px;
+            margin-bottom: 20px;
+        }
+
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .icon-item {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: 0.3s;
+            border: 1px solid #222;
+        }
+
+        .icon-item:hover {
+            border-color: var(--primary-red);
+            transform: translateY(-5px);
+        }
+
+        .icon-item i { font-size: 25px; margin-bottom: 10px; }
+        .fa-facebook { color: #1877f2; }
+        .fa-instagram { color: #e4405f; }
+        .fa-tiktok { color: #ff0050; }
+        .fa-youtube { color: #ff0000; }
+        .fa-telegram { color: #0088cc; }
+        .fa-twitter { color: #1da1f2; }
+
+        .service-list {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 10px;
+        }
+
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #333;
+        }
+
+        .order-btn {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .support-float {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .support-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 25px;
+            color: white;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .whatsapp { background-color: #25d366; }
+        .telegram { background-color: #0088cc; }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2 style="margin:0;">HOSSAM <span style="color: var(--primary-red);">SMM</span></h2>
+    </header>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>$0.00</h3>
+                <p>إجمالي الرصيد</p>
+            </div>
+            <div class="stat-card">
+                <h3>0%</h3>
+                <p>خصم خاص</p>
+            </div>
+        </div>
+
+        <h3 class="services-title">خدماتنا السريعة</h3>
+
+        <div class="icon-grid">
+            <div class="icon-item"><i class="fab fa-facebook"></i></div>
+            <div class="icon-item"><i class="fab fa-instagram"></i></div>
+            <div class="icon-item"><i class="fab fa-tiktok"></i></div>
+            <div class="icon-item"><i class="fab fa-youtube"></i></div>
+            <div class="icon-item"><i class="fab fa-telegram"></i></div>
+            <div class="icon-item"><i class="fab fa-twitter-square"></i></div>
+            <div class="icon-item"><i class="fab fa-linkedin"></i></div>
+            <div class="icon-item"><i class="fas fa-plus-circle"></i></div>
+        </div>
+
+        <h3 class="services-title">قائمة الأسعار</h3>
+        
+        <div class="service-list">
+            <div class="service-item">
+                <span>1000 متابع انستقرام - سريع</span>
+                <button class="order-btn">طلب بـ $1.20</button>
+            </div>
+            <div class="service-item">
+                <span>1000 لايك فيسبوك - ضمان</span>
+                <button class="order-btn">طلب بـ $0.80</button>
+            </div>
+            <div class="service-item">
+                <span>5000 مشاهدة تيك توك</span>
+                <button class="order-btn">طلب بـ $2.50</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="support-float">
+        <a href="https://wa.me/XXXXXXXX" class="support-btn whatsapp"><i class="fab fa-whatsapp"></i></a>
+        <a href="https://t.me/XXXXXX" class="support-btn telegram"><i class="fab fa-telegram-plane"></i></a>
+    </div>
+
+</body>
+</html>
