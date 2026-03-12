@@ -10,66 +10,79 @@
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
         .header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--main); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .stat-box { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #222; text-align: center; }
+        .stat-box { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #222; text-align: center; cursor: pointer; }
         .stat-box h3 { margin: 0; font-size: 16px; color: #fff; }
         .stat-box p { margin: 5px 0 0; color: #aaa; font-size: 11px; }
         .order-container { padding: 20px; }
         label { display: block; margin-bottom: 10px; color: #aaa; font-size: 14px; }
         select, input { width: 100%; padding: 15px; background: var(--input); border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; font-size: 14px; outline: none; }
         .description-box { background: #0a0a0a; border: 1px solid #222; padding: 15px; border-radius: 10px; font-size: 13px; color: #00ff00; margin-bottom: 20px; min-height: 40px; line-height: 1.6; }
-        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
-        .btn-order:hover { opacity: 0.8; }
+        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        
+        /* Loading Overlay */
         #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
         .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid var(--main); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* Modal for Binance */
+        .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); }
+        .modal-content { background: #111; margin: 20% auto; padding: 20px; border: 1px solid var(--main); width: 80%; border-radius: 15px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div id="loading-overlay">
         <div class="spinner"></div>
-        <p style="margin-top: 15px;">جاري جلب كافة العروض من السيرفر...</p>
+        <p style="margin-top: 15px;">جاري جلب العروض بمفتاحك الجديد...</p>
     </div>
 
     <div class="header">
         <div style="font-weight: bold; color: var(--main); font-size: 20px;">FOLLOW VPN</div>
-        <i class="fas fa-bars"></i>
+        <a href="https://t.me/VPN_Dzz" style="color: #fff; text-decoration: none;"><i class="fab fa-telegram"></i></a>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-box"><h3>$0.0030588</h3><p>الرصيد المتاح</p></div> <div class="stat-box"><h3>$8.3469412</h3><p>إجمالي المصروفات</p></div> <div class="stat-box"><h3>1,690,345</h3><p>طلبات السيرفر</p></div> <div class="stat-box" style="background:var(--main); border:none;"><h3>شحن رصيد</h3><p style="color:#fff">Binance Pay</p></div>
+        <div class="stat-box"><h3>$0.00</h3><p>الرصيد</p></div> 
+        <div class="stat-box" style="background:var(--main);" onclick="showBinance()"><h3>شحن رصيد</h3><p style="color:#fff">Binance Pay</p></div>
     </div>
 
     <div class="order-container">
         <h2 style="font-size: 18px; border-right: 4px solid var(--main); padding-right: 12px; margin-bottom: 25px;">إضافة طلب جديد</h2>
         
-        <label>الفئة (Category)</label>
-        <select id="category" onchange="filterServices()"><option>تحميل...</option></select>
+        <label>الفئة</label>
+        <select id="category" onchange="filterServices()"><option>تحميل الفئات...</option></select>
 
-        <label>الخدمة (Service)</label>
-        <select id="service" onchange="updateDetails()"><option>اختر الفئة أولاً...</option></select>
+        <label>الخدمة</label>
+        <select id="service" onchange="updateDetails()"><option>اختر الفئة...</option></select>
 
         <label>تفاصيل الخدمة</label>
         <div id="service-desc" class="description-box">بانتظار اختيار الخدمة...</div>
 
-        <label>الرابط (Link)</label>
-        <input type="text" id="link" placeholder="أدخل الرابط هنا...">
+        <label>الرابط</label>
+        <input type="text" id="link" placeholder="رابط الحساب أو الفيديو...">
 
-        <label>الكمية (Quantity)</label>
+        <label>الكمية</label>
         <input type="number" id="quantity" value="1000" min="1" oninput="calculatePrice()">
 
         <div style="display:flex; justify-content:space-between; padding:15px; background:rgba(255,0,0,0.1); border-radius:12px; margin-bottom:20px; border: 1px dashed var(--main);">
-            <span>التكلفة الإجمالية:</span>
+            <span>التكلفة المتوقعة:</span>
             <span id="total-price" style="color:var(--main); font-weight:bold; font-size:18px;">$0.00</span>
         </div>
 
-        <button class="btn-order">تأكيد وإرسال الطلب</button>
+        <button class="btn-order" onclick="sendOrder()">تأكيد وإرسال الطلب</button>
+    </div>
+
+    <div id="binanceModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color:var(--main)">شحن الرصيد</h3>
+            <p>Binance ID: <br><strong style="font-size: 20px;">1203247691</strong></p>
+            <button onclick="closeBinance()" style="background:#333; color:#fff; border:none; padding:10px 20px; border-radius:8px;">إغلاق</button>
+        </div>
     </div>
 
     <script>
-        // مفتاح API الخاص بك من الصورة
-        const API_KEY = '9c3b0dbe1df040d32be6e2dc1dc12a68';
-        // استخدام بروكسي موثوق لجلب البيانات دون حظر
+        // المفتاح الجديد من الصورة
+        const API_KEY = '849929532822a945d947f63126f37a54';
         const API_URL = `https://api.allorigins.win/get?url=${encodeURIComponent('https://evoiy.com/api/v2?action=services&key=' + API_KEY)}`;
 
         let allServices = [];
@@ -80,7 +93,6 @@
                 const data = await response.json();
                 allServices = JSON.parse(data.contents);
                 
-                // ترتيب الفئات أبجدياً وعرضها
                 const categories = [...new Set(allServices.map(s => s.category))].sort();
                 const catSelect = document.getElementById('category');
                 catSelect.innerHTML = '';
@@ -96,7 +108,7 @@
                 document.getElementById('loading-overlay').style.display = 'none';
             } catch (error) {
                 console.error("Error:", error);
-                alert("حدث خطأ في الاتصال بالسيرفر. تأكد من مفتاح الـ API.");
+                alert("تأكد من تفعيل الـ API في حسابك أو انتظر دقيقة.");
             }
         }
 
@@ -104,15 +116,12 @@
             const selectedCat = document.getElementById('category').value;
             const serSelect = document.getElementById('service');
             serSelect.innerHTML = '';
-
             const filtered = allServices.filter(s => s.category === selectedCat);
             filtered.forEach(s => {
                 let option = document.createElement('option');
                 option.value = s.service;
                 option.setAttribute('data-rate', s.rate);
-                option.setAttribute('data-min', s.min);
-                option.setAttribute('data-max', s.max);
-                option.innerText = `[${s.service}] ${s.name} - $${s.rate}`;
+                option.innerText = s.name + " - $" + s.rate;
                 serSelect.appendChild(option);
             });
             updateDetails();
@@ -121,15 +130,8 @@
         function updateDetails() {
             const serSelect = document.getElementById('service');
             const selected = serSelect.options[serSelect.selectedIndex];
-            
             if(selected) {
-                const min = selected.getAttribute('data-min');
-                const max = selected.getAttribute('data-max');
-                const rate = selected.getAttribute('data-rate');
-                document.getElementById('service-desc').innerHTML = `
-                    <b>الحد الأدنى:</b> ${min} | <b>الحد الأقصى:</b> ${max} <br>
-                    <b>السعر لكل 1000:</b> $${rate}
-                `;
+                document.getElementById('service-desc').innerHTML = `السعر لكل 1000: $${selected.getAttribute('data-rate')}`;
             }
             calculatePrice();
         }
@@ -139,10 +141,12 @@
             const selected = serSelect.options[serSelect.selectedIndex];
             const rate = selected ? parseFloat(selected.getAttribute('data-rate')) : 0;
             const qty = parseInt(document.getElementById('quantity').value) || 0;
-            
-            const total = (rate * qty) / 1000;
-            document.getElementById('total-price').innerText = "$" + total.toFixed(4);
+            document.getElementById('total-price').innerText = "$" + ((rate * qty) / 1000).toFixed(4);
         }
+
+        function showBinance() { document.getElementById('binanceModal').style.display = 'block'; }
+        function closeBinance() { document.getElementById('binanceModal').style.display = 'none'; }
+        function sendOrder() { alert('سيتم تفعيل الدفع الآلي قريباً، حالياً تواصل مع الدعم عبر التلجرام لإتمام الطلب.'); }
 
         window.onload = fetchServices;
     </script>
