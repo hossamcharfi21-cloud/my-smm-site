@@ -3,217 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOLLOW VPN - اللوحة الشاملة</title>
+    <title>FOLLOW VPN - اللوحة الذكية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main: #ff0000; --bg: #000; --card: #111; --text-gray: #aaa; --input-bg: #1a1a1a; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 80px; }
-        
+        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; }
         .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 1000; }
         .logo { color: var(--main); font-size: 20px; font-weight: bold; }
-
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
         .stat-box { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #222; text-align: center; }
         .stat-box h3 { margin: 0; font-size: 16px; color: #fff; }
         .stat-box p { margin: 5px 0 0; color: var(--text-gray); font-size: 11px; }
-
-        /* شريط أيقونات المنصات */
         .platforms-wrapper { display: flex; overflow-x: auto; gap: 15px; padding: 15px; background: #050505; border-bottom: 1px solid #222; scrollbar-width: none; }
-        .platforms-wrapper::-webkit-scrollbar { display: none; }
         .plat-btn { min-width: 65px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; opacity: 0.4; transition: 0.3s; }
-        .plat-btn.active { opacity: 1; transform: scale(1.1); color: var(--main); }
-        .plat-btn i { font-size: 25px; }
-        .plat-btn span { font-size: 11px; }
-
+        .plat-btn.active { opacity: 1; color: var(--main); }
         .order-form { padding: 20px; }
-        .section-title { color: var(--main); border-right: 4px solid var(--main); padding-right: 10px; margin-bottom: 20px; font-size: 18px; font-weight: bold; }
-        .field { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; color: var(--text-gray); font-size: 13px; }
-        select, input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid #333; color: #fff; border-radius: 10px; font-size: 13px; outline: none; box-sizing: border-box; }
-
-        .calc-box { background: rgba(255,0,0,0.1); border: 1px dashed var(--main); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .calc-box b { color: var(--main); font-size: 18px; }
-
-        .confirm-btn { background: var(--main); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 20px; font-size: 16px; }
-
-        /* نافذة الدفع */
-        .pay-modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); }
-        .pay-box { background: #111; margin: 20% auto; padding: 25px; width: 80%; border-radius: 15px; border: 1px solid var(--main); text-align: center; }
+        select, input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid #333; color: #fff; border-radius: 10px; margin-bottom: 15px; outline: none; }
+        .price-box { background: rgba(255,0,0,0.1); border: 1px dashed var(--main); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; margin-top: 10px; }
+        .confirm-btn { background: var(--main); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div onclick="alert('سجل الطلبات متاح للأعضاء المسجلين')" style="cursor:pointer;"><i class="fas fa-bars"></i></div>
+        <div><i class="fas fa-bars"></i></div>
         <div class="logo">FOLLOW VPN</div>
         <div style="color: var(--main);"><i class="fas fa-user-circle"></i></div>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-box"><h3>$0.00305</h3><p>الرصيد</p></div>
-        <div class="stat-box"><h3>$8.346</h3><p>المصروفات</p></div>
-        <div class="stat-box"><h3>1,690,345</h3><p>إجمالي الطلبات</p></div>
-        <div class="stat-box" onclick="showPay()" style="background:var(--main); border:none; cursor:pointer;"><h3>شحن الرصيد</h3><p style="color:#fff">اضغط للتفاصيل</p></div>
+        <div class="stat-box"><h3>$0.00305</h3><p>الرصيد</p></div> <div class="stat-box"><h3>$8.346</h3><p>المصروفات</p></div> <div class="stat-box"><h3>1,690,345</h3><p>الطلبات</p></div> <div class="stat-box" style="background:var(--main); border:none;"><h3>شحن</h3><p style="color:#fff">Binance</p></div>
     </div>
 
     <div class="platforms-wrapper">
-        <div class="plat-btn active" onclick="loadData('fb', this)"><i class="fab fa-facebook" style="color:#1877f2"></i><span>فيسبوك</span></div>
-        <div class="plat-btn" onclick="loadData('ig', this)"><i class="fab fa-instagram" style="color:#e4405f"></i><span>إنستقرام</span></div>
-        <div class="plat-btn" onclick="loadData('tk', this)"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
-        <div class="plat-btn" onclick="loadData('yt', this)"><i class="fab fa-youtube" style="color:#ff0000"></i><span>يوتيوب</span></div>
-        <div class="plat-btn" onclick="loadData('tg', this)"><i class="fab fa-telegram" style="color:#0088cc"></i><span>تليجرام</span></div>
+        <div class="plat-btn active" onclick="filterByPlatform('Facebook')"><i class="fab fa-facebook"></i><span>فيسبوك</span></div>
+        <div class="plat-btn" onclick="filterByPlatform('Instagram')"><i class="fab fa-instagram"></i><span>إنستقرام</span></div>
+        <div class="plat-btn" onclick="filterByPlatform('TikTok')"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
+        <div class="plat-btn" onclick="filterByPlatform('YouTube')"><i class="fab fa-youtube"></i><span>يوتيوب</span></div>
+        <div class="plat-btn" onclick="filterByPlatform('Telegram')"><i class="fab fa-telegram"></i><span>تليجرام</span></div>
     </div>
 
     <div class="order-form">
-        <div class="section-title">إنشاء طلب جديد</div>
-        
-        <div class="field">
-            <label>الفئة (Category)</label>
-            <select id="category-box" onchange="loadServices()"></select>
-        </div>
+        <label>القسم (سيتم تحميل كافة الأقسام...)</label>
+        <select id="category-box" onchange="fillServices()"></select>
 
-        <div class="field">
-            <label>الخدمة (Service)</label>
-            <select id="service-box" onchange="runCalc()"></select>
-        </div>
+        <label>الخدمة (أكثر من 100 خدمة متاحة)</label>
+        <select id="service-box" onchange="updatePrice()"></select>
 
-        <div class="field">
-            <label>الرابط (Link)</label>
-            <input type="text" id="target-link" placeholder="أدخل الرابط هنا">
-        </div>
+        <label>الرابط</label>
+        <input type="text" id="link" placeholder="أدخل الرابط هنا">
 
-        <div class="field">
-            <label>الكمية (Quantity)</label>
-            <input type="number" id="target-qty" oninput="runCalc()" value="1000">
-        </div>
+        <label>الكمية</label>
+        <input type="number" id="qty" value="1000" oninput="updatePrice()">
 
-        <div class="calc-box">
-            <span>التكلفة الإجمالية:</span>
-            <b id="final-price">$0.00</b>
+        <div class="price-box">
+            <span>التكلفة:</span>
+            <b id="total-price">$0.00</b>
         </div>
-
-        <button class="confirm-btn" onclick="submit()">تأكيد الطلب</button>
+        <button class="confirm-btn">تأكيد الطلب</button>
     </div>
-
-    <div id="payment-modal" class="pay-modal">
-        <div class="pay-box">
-            <h3 style="color:var(--main)">شحن الرصيد</h3>
-            <p style="font-size:14px; color:#aaa">Binance Pay ID:</p>
-            <div style="background:#1a1a1a; padding:15px; border-radius:8px; color:#f3ba2f; font-size:20px; font-weight:bold; margin:15px 0;">1203247691</div>
-            <button class="confirm-btn" onclick="hidePay()">إغلاق</button>
-        </div>
-    </div>
-
-    <a href="https://t.me/VPN_Dzz" class="confirm-btn" style="position:fixed; bottom:20px; left:20px; width:50px; height:50px; border-radius:50%; display:flex; align-items:center; justify-content:center; text-decoration:none;"><i class="fab fa-telegram-plane"></i></a>
 
     <script>
-        // قاعدة بيانات العروض - تم دمج كل شيء هنا
-        const appDatabase = {
-            fb: {
-                categories: ["فيسبوك تفاعل منشورات [الأرخص]", "فيسبوك متابعين", "مشاهدات فيديو"],
-                services: {
-                    "فيسبوك تفاعل منشورات [الأرخص]": [
-                        {n: "1366 - Facebook Post React [Like] - $0.80", p: 0.80},
-                        {n: "1367 - Facebook Post React [Love] - $0.95", p: 0.95}
-                    ],
-                    "فيسبوك متابعين": [
-                        {n: "متابعين صفحة ضمان - $1.40", p: 1.40},
-                        {n: "متابعين بروفايل سريع - $1.20", p: 1.20}
-                    ],
-                    "مشاهدات فيديو": [
-                        {n: "مشاهدات ريلز فيسبوك - $0.15", p: 0.15}
-                    ]
-                }
-            },
-            ig: {
-                categories: ["إنستغرام متابعين [ضمان]", "إنستغرام لايكات حقيقية"],
-                services: {
-                    "إنستغرام متابعين [ضمان]": [
-                        {n: "متابعين ضمان 30 يوم - $0.90", p: 0.90},
-                        {n: "متابعين جودة عالية - $1.30", p: 1.30}
-                    ],
-                    "إنستغرام لايكات حقيقية": [
-                        {n: "لايكات سريعة - $0.18", p: 0.18}
-                    ]
-                }
-            },
-            tk: {
-                categories: ["تيك توك مشاهدات 🔥", "تيك توك متابعين", "تيك توك لايكات"],
-                services: {
-                    "تيك توك مشاهدات 🔥": [
-                        {n: "مشاهدات تيك توك [سريع جداً] - $0.02", p: 0.02}
-                    ],
-                    "تيك توك متابعين": [
-                        {n: "متابعين تيك توك [NEW] - $1.90", p: 1.90}
-                    ],
-                    "تيك توك لايكات": [
-                        {n: "لايكات تيك توك - $0.45", p: 0.45}
-                    ]
-                }
-            },
-            yt: {
-                categories: ["يوتيوب مشاهدات", "يوتيوب مشتركين"],
-                services: {
-                    "يوتيوب مشاهدات": [{n: "مشاهدات يوتيوب ضمان - $1.95", p: 1.95}],
-                    "يوتيوب مشتركين": [{n: "مشتركين يوتيوب حقيقي - $12.50", p: 12.50}]
-                }
-            },
-            tg: {
-                categories: ["تليجرام أعضاء قنوات", "تليجرام تصويت"],
-                services: {
-                    "تليجرام أعضاء قنوات": [{n: "أعضاء قنوات سريع - $1.25", p: 1.25}],
-                    "تليجرام تصويت": [{n: "تصويت مسابقات - $2.15", p: 2.15}]
-                }
+        const API_KEY = "9c3b0dbe1f0f040d32be6e2dc1dc12a68"; //
+        const PROXY_URL = "https://cors-anywhere.herokuapp.com/"; // لتجاوز حماية CORS
+        const API_URL = "https://evoiy.com/api/v2?action=services&key=" + API_KEY;
+
+        let allServices = [];
+
+        // جلب جميع الخدمات من الموقع الأصلي
+        async function fetchAllServices() {
+            try {
+                const response = await fetch(PROXY_URL + API_URL);
+                allServices = await response.json();
+                filterByPlatform('Facebook'); // البدء بفيسبوك افتراضياً
+            } catch (error) {
+                console.error("خطأ في جلب البيانات:", error);
+                alert("يرجى تفعيل البروكسي لجلب العروض");
             }
-        };
+        }
 
-        let activePlat = 'fb';
-
-        function loadData(plat, el) {
-            activePlat = plat;
-            document.querySelectorAll('.plat-btn').forEach(b => b.classList.remove('active'));
-            el.classList.add('active');
-            
+        function filterByPlatform(platName) {
             const catBox = document.getElementById('category-box');
             catBox.innerHTML = "";
-            appDatabase[plat].categories.forEach(c => {
-                let op = document.createElement('option');
-                op.text = c; op.value = c;
-                catBox.add(op);
+            
+            // استخراج الأقسام الفريدة التي تنتمي للمنصة المختارة
+            const categories = [...new Set(allServices
+                .filter(s => s.category.toLowerCase().includes(platName.toLowerCase()))
+                .map(s => s.category))];
+
+            categories.forEach(c => {
+                catBox.options.add(new Option(c, c));
             });
-            loadServices();
+            fillServices();
         }
 
-        function loadServices() {
-            const currentCat = document.getElementById('category-box').value;
+        function fillServices() {
+            const selectedCat = document.getElementById('category-box').value;
             const serBox = document.getElementById('service-box');
             serBox.innerHTML = "";
-            
-            appDatabase[activePlat].services[currentCat].forEach(s => {
-                let op = document.createElement('option');
-                op.text = s.n; op.value = s.p;
-                serBox.add(op);
+
+            const filtered = allServices.filter(s => s.category === selectedCat);
+            filtered.forEach(s => {
+                serBox.options.add(new Option(`${s.service} - $${s.rate} - ${s.name}`, s.rate));
             });
-            runCalc();
+            updatePrice();
         }
 
-        function runCalc() {
-            const price = parseFloat(document.getElementById('service-box').value) || 0;
-            const qty = parseInt(document.getElementById('target-qty').value) || 0;
-            const total = (price * qty) / 1000;
-            document.getElementById('final-price').innerText = "$" + total.toFixed(3);
+        function updatePrice() {
+            const rate = parseFloat(document.getElementById('service-box').value) || 0;
+            const qty = parseInt(document.getElementById('qty').value) || 0;
+            document.getElementById('total-price').innerText = "$" + ((rate * qty) / 1000).toFixed(4);
         }
 
-        function showPay() { document.getElementById('payment-modal').style.display = 'block'; }
-        function hidePay() { document.getElementById('payment-modal').style.display = 'none'; }
-        
-        function submit() {
-            if(!document.getElementById('target-link').value) return alert("ضع الرابط أولاً");
-            alert("تم إرسال طلبك! سيظهر في السجل قريباً.");
-        }
-
-        // تشغيل افتراضي
-        window.onload = () => { loadData('fb', document.querySelector('.plat-btn')); };
+        window.onload = fetchAllServices;
     </script>
 </body>
 </html>
