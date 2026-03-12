@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOLLOW VPN - اللوحة المتكاملة</title>
+    <title>FOLLOW VPN - اللوحة الكاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main: #ff0000; --bg: #000; --card: #111; --text-gray: #aaa; --input-bg: #1a1a1a; }
@@ -12,162 +12,191 @@
         .logo { color: var(--main); font-size: 20px; font-weight: bold; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
         .stat-box { background: var(--card); border-radius: 12px; padding: 12px; border: 1px solid #222; text-align: center; }
-        .stat-box h3 { margin: 0; font-size: 15px; color: #fff; }
+        .stat-box h3 { margin: 0; font-size: 14px; color: #fff; }
         .stat-box p { margin: 5px 0 0; color: var(--text-gray); font-size: 10px; }
         .platforms-bar { display: flex; overflow-x: auto; gap: 15px; padding: 15px; background: #050505; border-bottom: 1px solid #222; scrollbar-width: none; }
         .plat-item { min-width: 65px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; opacity: 0.5; transition: 0.3s; }
         .plat-item.active { opacity: 1; color: var(--main); transform: scale(1.1); }
         .order-section { padding: 20px; }
-        .input-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; color: var(--text-gray); font-size: 13px; }
-        select, input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; font-size: 13px; }
-        .price-display { background: rgba(255,0,0,0.1); border: 1px dashed var(--main); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
-        .price-display span { color: var(--main); font-weight: bold; font-size: 18px; }
+        select, input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; font-size: 13px; margin-bottom: 15px; outline: none; }
+        .price-display { background: rgba(255,0,0,0.1); border: 1px dashed var(--main); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; }
         .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-        .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-        .modal-content { background: #111; margin: 20% auto; padding: 25px; width: 80%; border-radius: 15px; border: 1px solid var(--main); text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div onclick="alert('سجل الطلبات متاح')"><i class="fas fa-bars"></i></div>
+        <div><i class="fas fa-bars"></i></div>
         <div class="logo">FOLLOW VPN</div>
         <div style="color: var(--main);"><i class="fas fa-user-circle"></i></div>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-box"><h3>$0.0030588</h3><p>الرصيد المتاح</p></div> <div class="stat-box"><h3>$8.3469412</h3><p>إجمالي المصروفات</p></div> <div class="stat-box"><h3>1,690,345</h3><p>طلبات السيرفر</p></div> <div class="stat-box" onclick="openPay()" style="background:var(--main); border:none; cursor:pointer;"><h3>شحن رصيد</h3><p style="color:#fff">Binance Pay</p></div>
+        <div class="stat-box"><h3>$0.0030588</h3><p>رصيد الحساب</p></div> <div class="stat-box"><h3>$8.3469412</h3><p>المصروفات</p></div> <div class="stat-box"><h3>1,690,345</h3><p>إجمالي الطلبات</p></div> <div class="stat-box" style="background:var(--main); border:none;"><h3>شحن رصيد</h3><p style="color:#fff">Binance Pay</p></div>
     </div>
 
     <div class="platforms-bar">
-        <div class="plat-item active" onclick="setPlatform('fb', this)"><i class="fab fa-facebook" style="color:#1877f2"></i><span>فيسبوك</span></div>
-        <div class="plat-item" onclick="setPlatform('ig', this)"><i class="fab fa-instagram" style="color:#e4405f"></i><span>إنستقرام</span></div>
-        <div class="plat-item" onclick="setPlatform('tk', this)"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
-        <div class="plat-item" onclick="setPlatform('yt', this)"><i class="fab fa-youtube" style="color:#ff0000"></i><span>يوتيوب</span></div>
-        <div class="plat-item" onclick="setPlatform('tg', this)"><i class="fab fa-telegram" style="color:#0088cc"></i><span>تليجرام</span></div>
+        <div class="plat-item active" onclick="setPlat('fb', this)"><i class="fab fa-facebook"></i><span>فيسبوك</span></div>
+        <div class="plat-item" onclick="setPlat('ig', this)"><i class="fab fa-instagram"></i><span>إنستقرام</span></div>
+        <div class="plat-item" onclick="setPlat('tk', this)"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
+        <div class="plat-item" onclick="setPlat('yt', this)"><i class="fab fa-youtube"></i><span>يوتيوب</span></div>
+        <div class="plat-item" onclick="setPlat('tg', this)"><i class="fab fa-telegram"></i><span>تليجرام</span></div>
     </div>
 
     <div class="order-section">
-        <div class="input-group">
-            <label>القسم (Category)</label>
-            <select id="cat" onchange="updateServices()"></select>
-        </div>
-        <div class="input-group">
-            <label>الخدمة (Service)</label>
-            <select id="ser" onchange="calcPrice()"></select>
-        </div>
-        <div class="input-group">
-            <label>الرابط (Link)</label>
-            <input type="text" placeholder="أدخل الرابط هنا">
-        </div>
-        <div class="input-group">
-            <label>الكمية (Quantity)</label>
-            <input type="number" id="qty" value="1000" oninput="calcPrice()">
-        </div>
+        <label>الفئة (Category)</label>
+        <select id="cat" onchange="updateSer()"></select>
+
+        <label>الخدمة (Service)</label>
+        <select id="ser" onchange="calc()"></select>
+
+        <label>الرابط (Link)</label>
+        <input type="text" id="link" placeholder="أدخل الرابط هنا">
+
+        <label>الكمية (Quantity)</label>
+        <input type="number" id="qty" value="1000" oninput="calc()">
 
         <div class="price-display">
-            <p style="margin:0; font-size:14px;">إجمالي الثمن:</p>
-            <span id="total">$0.00</span>
+            <span>إجمالي السعر:</span>
+            <span id="total" style="color:var(--main); font-weight:bold; font-size:18px;">$0.00</span>
         </div>
-        <button class="btn-order">إرسال الطلب</button>
-    </div>
-
-    <div id="payM" class="modal">
-        <div class="modal-content">
-            <h3 style="color:var(--main)">شحن عبر Binance</h3>
-            <div style="background:#1a1a1a; padding:15px; border-radius:8px; color:#f3ba2f; font-size:18px; font-weight:bold; margin:15px 0;">ID: 1203247691</div>
-            <button class="btn-order" onclick="closePay()">إغلاق</button>
-        </div>
+        <button class="btn-order">تأكيد الطلب</button>
     </div>
 
     <script>
-        // قاعدة بيانات ضخمة تحتوي على كافة العروض المذكورة في صورك
-        const data = {
+        // قاعدة البيانات الشاملة لجميع العروض من صورك
+        const db = {
             fb: {
-                cats: ["فيسبوك تفاعل منشورات ❤️ [الأرخص]", "فيسبوك متابعين صفحة/بروفايل", "فيسبوك مشاهدات فيديو", "فيسبوك أعضاء مجموعات"],
+                cats: [
+                    "فيسبوك تفاعل منشورات ❤️ [الأرخص]", 
+                    "مشاهدات فيديوهات فيسبوك [أفضل سرعة]",
+                    "وقت المشاهدة على فيسبوك [60 ألف دقيقة]",
+                    "أعضاء مجموعة فيسبوك [حسابات حقيقية]",
+                    "متابعين بروفايل فيسبوك [سريع]",
+                    "لايكات صفحات فيسبوك [ضمان]"
+                ],
                 servs: {
                     "فيسبوك تفاعل منشورات ❤️ [الأرخص]": [
                         {n: "1366 - Facebook Post React [Like 👍] - $0.80", p: 0.80},
                         {n: "1367 - Facebook Post React [Love ❤️] - $0.90", p: 0.90},
-                        {n: "1368 - Facebook Post React [Haha 😂] - $0.90", p: 0.90}
+                        {n: "1368 - Facebook Post React [Haha 😂] - $0.90", p: 0.90},
+                        {n: "تفاعل منشورات (منوع) - $0.75", p: 0.75}
                     ],
-                    "فيسبوك متابعين صفحة/بروفايل": [
-                        {n: "متابعين صفحة (ضمان 30 يوم) - $1.50", p: 1.50},
-                        {n: "متابعين بروفايل جودة عالية - $1.80", p: 1.80}
+                    "مشاهدات فيديوهات فيسبوك [أفضل سرعة]": [
+                        {n: "مشاهدات فيديو [سريعة جداً] - $0.12", p: 0.12},
+                        {n: "مشاهدات ريلز فيسبوك [الأرخص] - $0.10", p: 0.10},
+                        {n: "مشاهدات بث مباشر - $5.50", p: 5.50}
                     ],
-                    "فيسبوك مشاهدات فيديو": [
-                        {n: "مشاهدات فيديو 3 ثواني - $0.10", p: 0.10},
-                        {n: "مشاهدات ريلز فيسبوك - $0.15", p: 0.15}
+                    "وقت المشاهدة على فيسبوك [60 ألف دقيقة]": [
+                        {n: "60k Minutes Viewtime [ضمان] - $4.40", p: 4.40}
                     ],
-                    "فيسبوك أعضاء مجموعات": [
-                        {n: "أعضاء مجموعة (حسابات حقيقية) - $2.20", p: 2.20}
+                    "أعضاء مجموعة فيسبوك [حسابات حقيقية]": [
+                        {n: "Group Members [جودة عالية] - $2.15", p: 2.15}
+                    ],
+                    "متابعين بروفايل فيسبوك [سريع]": [
+                        {n: "متابعين بروفايل (عالمي) - $1.20", p: 1.20}
+                    ],
+                    "لايكات صفحات فيسبوك [ضمان]": [
+                        {n: "لايكات ومتابعين صفحة (ضمان 30 يوم) - $1.60", p: 1.60}
                     ]
                 }
             },
             ig: {
-                cats: ["إنستغرام متابعين [ضمان]", "إنستغرام لايكات حقيقية", "إنستغرام مشاهدات ريلز/قصص"],
+                cats: [
+                    "إنستغرام متابعين [ضمان]", 
+                    "لايكات إنستغرام [حقيقية]",
+                    "مشاهدات إنستغرام [ريلز/فيديو]",
+                    "متابعو سلاسل الرسائل [الأفضل أداءً]",
+                    "خدمات قصص إنستغرام (Story)"
+                ],
                 servs: {
                     "إنستغرام متابعين [ضمان]": [
                         {n: "متابعين ضمان 30 يوم - $1.10", p: 1.10},
-                        {n: "متابعين جودة فائقة - $2.50", p: 2.50}
+                        {n: "متابعين ضمان مدى الحياة - $1.45", p: 1.45}
                     ],
-                    "إنستغرام لايكات حقيقية": [
-                        {n: "لايكات سريعة - $0.20", p: 0.20}
+                    "لايكات إنستغرام [حقيقية]": [
+                        {n: "لايكات سريعة جداً - $0.18", p: 0.18},
+                        {n: "لايكات من حسابات حقيقية - $0.35", p: 0.35}
                     ],
-                    "إنستغرام مشاهدات ريلز/قصص": [
-                        {n: "مشاهدات ريلز - $0.05", p: 0.05},
-                        {n: "مشاهدات قصص (Story) - $0.12", p: 0.12}
+                    "مشاهدات إنستغرام [ريلز/فيديو]": [
+                        {n: "مشاهدات ريلز [تحدي السعر] - $0.05", p: 0.05}
+                    ],
+                    "متابعو سلاسل الرسائل [الأفضل أداءً]": [
+                        {n: "Threads Followers [NEW] - $1.20", p: 1.20}
+                    ],
+                    "خدمات قصص إنستغرام (Story)": [
+                        {n: "مشاهدات ستوري إنستغرام - $0.12", p: 0.12}
                     ]
                 }
             },
             tk: {
-                cats: ["تيك توك مشاهدات [تحدي السوق]", "تيك توك متابعين سريع", "تيك توك إعجابات"],
+                cats: [
+                    "مشاهدات تيك توك [تحدي السوق]", 
+                    "تيك توك متابعين [سريع]",
+                    "إعجابات تيك توك [تايلاند]",
+                    "تيك توك مشاركات وحفظ"
+                ],
                 servs: {
-                    "تيك توك مشاهدات [تحدي السوق]": [
-                        {n: "مشاهدات تيك توك (سريع) - $0.01", p: 0.01},
-                        {n: "مشاهدات تيك توك (جودة عالية) - $0.03", p: 0.03}
+                    "مشاهدات تيك توك [تحدي السوق]": [
+                        {n: "مشاهدات تيك توك [أرخص سعر] - $0.01", p: 0.01},
+                        {n: "مشاهدات تيك توك [سريع] - $0.03", p: 0.03}
                     ],
-                    "تيك توك متابعين سريع": [
-                        {n: "متابعين سريع - $2.00", p: 2.00}
+                    "تيك توك متابعين [سريع]": [
+                        {n: "متابعين تيك توك [NEW] - $1.95", p: 1.95}
                     ],
-                    "تيك توك إعجابات": [
-                        {n: "تيك توك إعجابات تايوان - $0.50", p: 0.50}
+                    "إعجابات تيك توك [تايلاند]": [
+                        {n: "إعجابات تيك توك 🇹🇭 - $0.48", p: 0.48}
+                    ],
+                    "تيك توك مشاركات وحفظ": [
+                        {n: "تيك توك مشاركات (Shares) - $0.08", p: 0.08}
+                    ]
+                }
+            },
+            yt: {
+                cats: ["مشاهدات يوتيوب [بدون إعادة تعبئة]", "مشتركين يوتيوب", "يوتيوب ساعات المشاهدة"],
+                servs: {
+                    "مشاهدات يوتيوب [بدون إعادة تعبئة]": [
+                        {n: "مشاهدات يوتيوب الأرخص - $1.80", p: 1.80}
+                    ],
+                    "مشتركين يوتيوب": [
+                        {n: "مشتركين يوتيوب [ضمان] - $12.50", p: 12.50}
+                    ],
+                    "يوتيوب ساعات المشاهدة": [
+                        {n: "4000 ساعة مشاهدة [ضمان] - $25.00", p: 25.00}
                     ]
                 }
             }
         };
 
-        let currentP = 'fb';
+        let currentPlat = 'fb';
 
-        function setPlatform(p, el) {
-            currentP = p;
+        function setPlat(p, el) {
+            currentPlat = p;
             document.querySelectorAll('.plat-item').forEach(i => i.classList.remove('active'));
             el.classList.add('active');
             const cS = document.getElementById('cat');
             cS.innerHTML = "";
-            data[p].cats.forEach(c => cS.innerHTML += `<option>${c}</option>`);
-            updateServices();
+            db[p].cats.forEach(c => cS.innerHTML += `<option>${c}</option>`);
+            updateSer();
         }
 
-        function updateServices() {
+        function updateSer() {
             const cat = document.getElementById('cat').value;
             const sS = document.getElementById('ser');
             sS.innerHTML = "";
-            data[currentP].servs[cat].forEach(s => sS.innerHTML += `<option value="${s.p}">${s.n}</option>`);
-            calcPrice();
+            db[currentPlat].servs[cat].forEach(s => sS.innerHTML += `<option value="${s.p}">${s.n}</option>`);
+            calc();
         }
 
-        function calcPrice() {
+        function calc() {
             const rate = parseFloat(document.getElementById('ser').value) || 0;
-            const qty = parseInt(document.getElementById('qty').value) || 0;
-            document.getElementById('total').innerText = "$" + ((rate * qty) / 1000).toFixed(3);
+            const q = parseInt(document.getElementById('qty').value) || 0;
+            document.getElementById('total').innerText = "$" + ((rate * q) / 1000).toFixed(4);
         }
 
-        function openPay() { document.getElementById('payM').style.display='block'; }
-        function closePay() { document.getElementById('payM').style.display='none'; }
-
-        window.onload = () => setPlatform('fb', document.querySelector('.plat-item'));
+        window.onload = () => setPlat('fb', document.querySelector('.plat-item'));
     </script>
 </body>
 </html>
+
