@@ -1,5 +1,9 @@
-<?php
-// هذا الملف سيقوم بتحويل موقعك ليعمل مثل واجهة Evoiy
-header("Location: https://evoiy.com/ref/bsklw");
-exit;
-?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="refresh" content="0; url=https://evoiy.com/ref/bsklw">
+</head>
+<body>
+    <p>جاري تحويلك إلى الموقع...</p>
+</body>
+</html>
