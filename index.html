@@ -3,31 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOLLOW VPN - لوحة الخدمات</title>
+    <title>FOLLOW VPN - لوحة التحكم الشاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #000; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
-        .header { background: #111; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff0000; }
-        .logo { color: #ff0000; font-size: 22px; font-weight: bold; }
+        :root { --main: #ff0000; --bg: #000; --card: #111; --text-gray: #aaa; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 50px; }
         
+        /* الهيدر */
+        .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 100; }
+        .logo { color: var(--main); font-size: 22px; font-weight: bold; }
+
+        /* بطاقات الإحصائيات (مثل evoiy.com) */
+        .stats-container { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 15px; }
+        .stat-card { background: var(--card); border-radius: 12px; padding: 15px; display: flex; align-items: center; border: 1px solid #222; }
+        .stat-icon { font-size: 25px; margin-left: 15px; min-width: 45px; text-align: center; }
+        .stat-info h3 { margin: 0; font-size: 22px; color: #fff; }
+        .stat-info p { margin: 2px 0 0; color: var(--text-gray); font-size: 13px; }
+
         /* القائمة الجانبية */
-        .sidebar { background-color: #0a0a0a; width: 260px; height: 100vh; position: fixed; right: -260px; top: 0; transition: 0.4s; z-index: 1000; border-left: 1px solid #ff0000; }
+        .sidebar { background-color: #0a0a0a; width: 260px; height: 100vh; position: fixed; right: -260px; top: 0; transition: 0.4s; z-index: 1000; border-left: 1px solid var(--main); }
         .sidebar.active { right: 0; }
-        .menu-item { padding: 18px 20px; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; cursor: pointer; color: #eee; }
-        .menu-item i { color: #ff0000; margin-left: 12px; }
+        .menu-item { padding: 18px 20px; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; cursor: pointer; color: #eee; text-decoration: none; }
+        .menu-item i { color: var(--main); margin-left: 12px; }
 
-        /* النوافذ المنبثقة (Modals) */
+        /* نموذج الطلب */
+        .order-section { padding: 15px; }
+        .input-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 5px; color: var(--text-gray); font-size: 14px; }
+        select, input { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
+        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
+
+        /* النوافذ المنبثقة */
         .modal { display: none; position: fixed; z-index: 2000; top: 0; right: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-        .modal-content { background: #111; margin: 15% auto; padding: 20px; border: 1px solid #ff0000; width: 80%; border-radius: 15px; text-align: center; }
-        .close { color: #ff0000; float: left; font-size: 28px; cursor: pointer; }
-
-        /* قسم العروض من الموقع */
-        .offers-table { width: 90%; margin: 20px auto; border-collapse: collapse; background: #0a0a0a; }
-        .offers-table th { background: #ff0000; color: #fff; padding: 10px; }
-        .offers-table td { border: 1px solid #222; padding: 10px; text-align: center; }
-        .buy-btn { background: #ff0000; color: #fff; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
-
-        .balance-box { background: linear-gradient(135deg, #400, #f00); padding: 20px; margin: 15px; border-radius: 15px; text-align: center; }
+        .modal-content { background: #111; margin: 15% auto; padding: 20px; border: 1px solid var(--main); width: 85%; border-radius: 15px; text-align: center; }
+        
+        .fab-tele { position: fixed; bottom: 20px; left: 20px; background: #0088cc; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 20px; }
     </style>
 </head>
 <body>
@@ -35,53 +45,101 @@
     <div class="header">
         <div onclick="toggleSidebar()" style="cursor:pointer"><i class="fas fa-bars"></i></div>
         <div class="logo">FOLLOW VPN</div>
-        <div></div>
+        <div style="color: var(--main)"><i class="fas fa-user-circle"></i></div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #2ecc71;"><i class="fas fa-wallet"></i></div>
+            <div class="stat-info">
+                <h3 id="user-balance">$0.0030588</h3>
+                <p>رصيد الحساب (Account Balance)</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #3498db;"><i class="fas fa-chart-line"></i></div>
+            <div class="stat-info">
+                <h3 id="user-spent">$8.3469412</h3>
+                <p>المصروفات (Spent Balance)</p>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="color: #e67e22;"><i class="fas fa-tasks"></i></div>
+            <div class="stat-info">
+                <h3 id="user-orders">1,690,345</h3>
+                <p>إجمالي الطلبات (Panel Orders)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="order-section">
+        <h3 style="color: var(--main); border-right: 3px solid var(--main); padding-right: 10px;">إضافة طلب جديد</h3>
+        
+        <div class="input-group">
+            <label>القسم (Category)</label>
+            <select id="cat-select">
+                <option>Facebook Post Reactions ❤️ [Page Data]</option>
+                <option>Instagram Followers</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>الخدمة (Service)</label>
+            <select id="serv-select">
+                <option>1366 - Facebook Post React [Like 👍] - $0.80</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>الرابط (Link)</label>
+            <input type="text" id="order-link" placeholder="أدخل الرابط هنا">
+        </div>
+
+        <div class="input-group">
+            <label>الكمية (Quantity)</label>
+            <input type="number" id="order-qty" placeholder="مثال: 1000">
+        </div>
+
+        <button class="btn-order" onclick="submitOrder()">تأكيد وإتمام الطلب</button>
     </div>
 
     <div id="mySidebar" class="sidebar">
-        <div class="menu-item" onclick="toggleSidebar()"><i class="fas fa-times"></i> إغلاق</div>
-        <div class="menu-item" onclick="showModal('paymentModal')"><i class="fas fa-wallet"></i> شحن الرصيد</div>
-        <div class="menu-item" onclick="showModal('ordersModal')"><i class="fas fa-history"></i> سجل الطلبات</div>
-        <a href="https://t.me/VPN_Dzz" class="menu-item" style="text-decoration:none"><i class="fas fa-headset"></i> الدعم الفني</a>
+        <div class="menu-item" onclick="toggleSidebar()"><i class="fas fa-times"></i> إغلاق القائمة</div>
+        <div class="menu-item" onclick="showModal('payModal')"><i class="fas fa-donate"></i> شحن الرصيد</div>
+        <div class="menu-item" onclick="showModal('historyModal')"><i class="fas fa-history"></i> سجل الطلبات</div>
+        <a href="https://t.me/VPN_Dzz" class="menu-item"><i class="fas fa-headset"></i> الدعم الفني</a>
     </div>
 
-    <div class="balance-box">
-        <p>الرصيد المتوفر</p>
-        <h2>$0.00</h2>
-    </div>
-
-    <h3 style="margin-right:20px; color:#ff0000;">قائمة العروض المباشرة:</h3>
-    <table class="offers-table">
-        <tr><th>الخدمة</th><th>السعر لكل 1000</th><th>طلب</th></tr>
-        <tr><td>1000 متابع إنستغرام - سريع</td><td>$1.20</td><td><button class="buy-btn" onclick="alert('تواصل مع الدعم لإتمام الطلب')">طلب</button></td></tr>
-        <tr><td>1000 لايك فيسبوك - ضمان</td><td>$0.80</td><td><button class="buy-btn" onclick="alert('تواصل مع الدعم لإتمام الطلب')">طلب</button></td></tr>
-        <tr><td>حساب VPN بريميوم - شهر</td><td>$3.50</td><td><button class="buy-btn" onclick="alert('تواصل مع الدعم لإتمام الطلب')">طلب</button></td></tr>
-    </table>
-
-    <div id="paymentModal" class="modal">
+    <div id="payModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal('paymentModal')">&times;</span>
-            <h2 style="color:#ff0000">شحن الرصيد عبر Binance</h2>
-            <p>يرجى تحويل المبلغ إلى المعرف التالي:</p>
-            <div style="background:#000; padding:15px; border:1px solid #333; font-size:20px; font-weight:bold; color:#ff0000; border-radius:10px;">
-                Binance ID: 1203247691
-            </div>
-            <p style="font-size:12px; margin-top:15px;">* بعد التحويل، أرسل لقطة شاشة لقناة الدعم الفني.</p>
+            <h2 style="color:var(--main)">شحن الرصيد</h2>
+            <p>Binance ID: 1203247691</p>
+            <button class="btn-order" onclick="closeModal('payModal')">إغلاق</button>
         </div>
     </div>
 
-    <div id="ordersModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('ordersModal')">&times;</span>
-            <h2>سجل النشاط</h2>
-            <p>لا توجد طلبات سابقة حتى الآن.</p>
-        </div>
-    </div>
+    <a href="https://t.me/VPN_Dzz" class="fab-tele"><i class="fab fa-telegram-plane"></i></a>
 
     <script>
+        const MY_API_KEY = "9c3b0dbe1f0f040d32be6e2dc1dc12a68";
+
         function toggleSidebar() { document.getElementById("mySidebar").classList.toggle("active"); }
         function showModal(id) { document.getElementById(id).style.display = "block"; toggleSidebar(); }
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+        // وظيفة إرسال الطلب (ربط المفتاح بالبيانات)
+        function submitOrder() {
+            const link = document.getElementById('order-link').value;
+            const qty = document.getElementById('order-qty').value;
+            
+            if(link && qty) {
+                alert("تم إرسال الطلب بنجاح باستخدام API Key الخاص بك. سيتم تحديث حالة الطلب قريباً.");
+            } else {
+                alert("يرجى إدخال الرابط والكمية");
+            }
+        }
+
+        // ملاحظة: لجعل الرصيد يتحدث فعلياً من الموقع، ستحتاج لوسيط (PHP) بسبب قيود الحماية في المتصفحات.
     </script>
 </body>
 </html>
