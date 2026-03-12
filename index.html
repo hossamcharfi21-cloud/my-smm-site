@@ -6,86 +6,82 @@
     <title>FOLLOW VPN - لوحة الخدمات</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #000; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow-x: hidden; }
+        body { background-color: #000; color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; }
+        .header { background: #111; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff0000; }
+        .logo { color: #ff0000; font-size: 22px; font-weight: bold; }
         
-        /* القائمة العلوية */
-        .header { background: #111; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff0000; position: sticky; top: 0; z-index: 100; }
-        .logo { color: #ff0000; font-size: 20px; font-weight: bold; letter-spacing: 1px; }
-        .open-btn { font-size: 24px; color: #fff; cursor: pointer; }
-
         /* القائمة الجانبية */
-        .sidebar { background-color: #0a0a0a; width: 260px; height: 100vh; position: fixed; right: -260px; top: 0; transition: 0.4s; z-index: 1000; border-left: 1px solid #ff0000; box-shadow: -5px 0 15px rgba(255,0,0,0.2); }
+        .sidebar { background-color: #0a0a0a; width: 260px; height: 100vh; position: fixed; right: -260px; top: 0; transition: 0.4s; z-index: 1000; border-left: 1px solid #ff0000; }
         .sidebar.active { right: 0; }
-        .menu-item { padding: 18px 20px; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; cursor: pointer; color: #eee; text-decoration: none; }
-        .menu-item:hover { background: #1a0000; color: #ff0000; }
-        .menu-item i { color: #ff0000; margin-left: 12px; width: 25px; font-size: 18px; }
+        .menu-item { padding: 18px 20px; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; cursor: pointer; color: #eee; }
+        .menu-item i { color: #ff0000; margin-left: 12px; }
 
-        /* صندوق الرصيد */
-        .balance-box { background: linear-gradient(135deg, #440000 0%, #ff0000 100%); padding: 25px; margin: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(255,0,0,0.3); }
-        .balance-box p { margin: 0; font-size: 14px; opacity: 0.9; }
-        .balance-box h2 { margin: 10px 0 0 0; font-size: 32px; }
+        /* النوافذ المنبثقة (Modals) */
+        .modal { display: none; position: fixed; z-index: 2000; top: 0; right: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+        .modal-content { background: #111; margin: 15% auto; padding: 20px; border: 1px solid #ff0000; width: 80%; border-radius: 15px; text-align: center; }
+        .close { color: #ff0000; float: left; font-size: 28px; cursor: pointer; }
 
-        /* منطقة الدفع (باينانس) */
-        .payment-section { background: #111; margin: 20px; padding: 15px; border-radius: 10px; border: 1px dashed #ff0000; text-align: center; }
-        .binance-id { color: #ff0000; font-weight: bold; font-size: 18px; display: block; margin-top: 5px; border: 1px solid #333; padding: 5px; border-radius: 5px; background: #000; }
+        /* قسم العروض من الموقع */
+        .offers-table { width: 90%; margin: 20px auto; border-collapse: collapse; background: #0a0a0a; }
+        .offers-table th { background: #ff0000; color: #fff; padding: 10px; }
+        .offers-table td { border: 1px solid #222; padding: 10px; text-align: center; }
+        .buy-btn { background: #ff0000; color: #fff; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; }
 
-        /* شبكة الخدمات */
-        .services-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; margin-bottom: 80px; }
-        .service-card { background: #111; border: 1px solid #222; padding: 20px; border-radius: 12px; text-align: center; transition: 0.3s; }
-        .service-card:hover { border-color: #ff0000; transform: translateY(-3px); }
-        .service-card i { font-size: 30px; color: #ff0000; margin-bottom: 10px; }
-        
-        /* زر التلجرام العائم */
-        .tg-float { position: fixed; bottom: 20px; left: 20px; background: #222; border: 2px solid #ff0000; color: white; padding: 12px 20px; border-radius: 50px; text-decoration: none; display: flex; align-items: center; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 99; }
-        .tg-float i { margin-left: 8px; font-size: 20px; color: #0088cc; }
+        .balance-box { background: linear-gradient(135deg, #400, #f00); padding: 20px; margin: 15px; border-radius: 15px; text-align: center; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="open-btn" onclick="toggleSidebar()"><i class="fas fa-bars"></i></div>
+        <div onclick="toggleSidebar()" style="cursor:pointer"><i class="fas fa-bars"></i></div>
         <div class="logo">FOLLOW VPN</div>
         <div></div>
     </div>
 
     <div id="mySidebar" class="sidebar">
-        <div class="menu-item" onclick="toggleSidebar()" style="background: #1a1a1a;"><i class="fas fa-times"></i> إغلاق القائمة</div>
-        <a href="#" class="menu-item"><i class="fas fa-plus-circle"></i> طلب جديد</a>
-        <a href="#" class="menu-item"><i class="fas fa-list"></i> الخدمات والعروض</a>
-        <a href="#" class="menu-item"><i class="fas fa-wallet"></i> شحن الرصيد</a>
-        <a href="https://t.me/VPN_Dzz" target="_blank" class="menu-item"><i class="fas fa-headset"></i> الدعم الفني (تلجرام)</a>
-        <a href="#" class="menu-item"><i class="fas fa-history"></i> سجل الطلبات</a>
+        <div class="menu-item" onclick="toggleSidebar()"><i class="fas fa-times"></i> إغلاق</div>
+        <div class="menu-item" onclick="showModal('paymentModal')"><i class="fas fa-wallet"></i> شحن الرصيد</div>
+        <div class="menu-item" onclick="showModal('ordersModal')"><i class="fas fa-history"></i> سجل الطلبات</div>
+        <a href="https://t.me/VPN_Dzz" class="menu-item" style="text-decoration:none"><i class="fas fa-headset"></i> الدعم الفني</a>
     </div>
 
     <div class="balance-box">
-        <p>الرصيد المتوفر في حسابك</p>
+        <p>الرصيد المتوفر</p>
         <h2>$0.00</h2>
     </div>
 
-    <div class="payment-section">
-        <p style="margin: 0; font-size: 13px;">لشحن الرصيد، أرسل المبلغ عبر Binance Pay:</p>
-        <span class="binance-id">Binance ID: 1203247691</span>
-        <p style="font-size: 11px; color: #888; margin-top: 8px;">* بعد الإرسال تواصل مع الدعم لتفعيل الرصيد</p>
+    <h3 style="margin-right:20px; color:#ff0000;">قائمة العروض المباشرة:</h3>
+    <table class="offers-table">
+        <tr><th>الخدمة</th><th>السعر لكل 1000</th><th>طلب</th></tr>
+        <tr><td>1000 متابع إنستغرام - سريع</td><td>$1.20</td><td><button class="buy-btn" onclick="alert('تواصل مع الدعم لإتمام الطلب')">طلب</button></td></tr>
+        <tr><td>1000 لايك فيسبوك - ضمان</td><td>$0.80</td><td><button class="buy-btn" onclick="alert('تواصل مع الدعم لإتمام الطلب')">طلب</button></td></tr>
+        <tr><td>حساب VPN بريميوم - شهر</td><td>$3.50</td><td><button class="buy-btn" onclick="alert('تواصل مع الدعم لإتمام الطلب')">طلب</button></td></tr>
+    </table>
+
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('paymentModal')">&times;</span>
+            <h2 style="color:#ff0000">شحن الرصيد عبر Binance</h2>
+            <p>يرجى تحويل المبلغ إلى المعرف التالي:</p>
+            <div style="background:#000; padding:15px; border:1px solid #333; font-size:20px; font-weight:bold; color:#ff0000; border-radius:10px;">
+                Binance ID: 1203247691
+            </div>
+            <p style="font-size:12px; margin-top:15px;">* بعد التحويل، أرسل لقطة شاشة لقناة الدعم الفني.</p>
+        </div>
     </div>
 
-    <div class="services-grid">
-        <div class="service-card"><i class="fas fa-shield-alt"></i><p>حسابات VPN</p></div>
-        <div class="service-card"><i class="fab fa-tiktok"></i><p>خدمات تيك توك</p></div>
-        <div class="service-card"><i class="fab fa-facebook"></i><p>خدمات فيسبوك</p></div>
-        <div class="service-card"><i class="fas fa-bolt"></i><p>عروض خاصة</p></div>
+    <div id="ordersModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('ordersModal')">&times;</span>
+            <h2>سجل النشاط</h2>
+            <p>لا توجد طلبات سابقة حتى الآن.</p>
+        </div>
     </div>
-
-    <a href="https://t.me/VPN_Dzz" target="_blank" class="tg-float">
-        <i class="fab fa-telegram-plane"></i>
-        قناتنا على تلجرام
-    </a>
 
     <script>
-        function toggleSidebar() {
-            var sidebar = document.getElementById("mySidebar");
-            sidebar.classList.toggle("active");
-        }
+        function toggleSidebar() { document.getElementById("mySidebar").classList.toggle("active"); }
+        function showModal(id) { document.getElementById(id).style.display = "block"; toggleSidebar(); }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
     </script>
 </body>
 </html>
-
