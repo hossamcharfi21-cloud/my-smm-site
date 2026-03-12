@@ -3,78 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOLLOW VPN | لوحة الخدمات الشاملة</title>
+    <title>FOLLOW VPN | اللوحة الشاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main: #ff0000; --bg: #000; --card: #111; --input: #1a1a1a; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', Tahoma; margin: 0; padding-bottom: 50px; }
-        .header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--main); display: flex; justify-content: space-between; align-items: center; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 50px; }
+        .header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--main); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .stat-box { background: var(--card); border-radius: 12px; padding: 12px; border: 1px solid #222; text-align: center; }
-        .stat-box h3 { margin: 0; font-size: 14px; color: #fff; }
-        .stat-box p { margin: 5px 0 0; color: #aaa; font-size: 10px; }
+        .stat-box { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #222; text-align: center; }
+        .stat-box h3 { margin: 0; font-size: 16px; color: #fff; }
+        .stat-box p { margin: 5px 0 0; color: #aaa; font-size: 11px; }
         .order-container { padding: 20px; }
-        label { display: block; margin-bottom: 8px; color: #aaa; font-size: 13px; }
-        select, input, textarea { width: 100%; padding: 14px; background: var(--input); border: 1px solid #333; color: #fff; border-radius: 10px; margin-bottom: 15px; box-sizing: border-box; }
-        .description-box { background: #0a0a0a; border: 1px solid #222; padding: 10px; border-radius: 8px; font-size: 12px; color: #00ff00; margin-bottom: 15px; min-height: 50px; }
-        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; }
-        #loading { text-align: center; color: var(--main); display: none; margin-bottom: 10px; }
+        label { display: block; margin-bottom: 10px; color: #aaa; font-size: 14px; }
+        select, input { width: 100%; padding: 15px; background: var(--input); border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; font-size: 14px; outline: none; }
+        .description-box { background: #0a0a0a; border: 1px solid #222; padding: 15px; border-radius: 10px; font-size: 13px; color: #00ff00; margin-bottom: 20px; min-height: 40px; line-height: 1.6; }
+        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 18px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        .btn-order:hover { opacity: 0.8; }
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #333; border-top: 4px solid var(--main); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px;">جاري جلب كافة العروض من السيرفر...</p>
+    </div>
+
     <div class="header">
-        <div style="font-weight: bold; color: var(--main);">FOLLOW VPN</div>
+        <div style="font-weight: bold; color: var(--main); font-size: 20px;">FOLLOW VPN</div>
         <i class="fas fa-bars"></i>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-box"><h3>$0.0030588</h3><p>الرصيد المتاح</p></div> <div class="stat-box"><h3>$8.3469412</h3><p>المصروفات</p></div> </div>
+        <div class="stat-box"><h3>$0.0030588</h3><p>الرصيد المتاح</p></div> <div class="stat-box"><h3>$8.3469412</h3><p>إجمالي المصروفات</p></div> <div class="stat-box"><h3>1,690,345</h3><p>طلبات السيرفر</p></div> <div class="stat-box" style="background:var(--main); border:none;"><h3>شحن رصيد</h3><p style="color:#fff">Binance Pay</p></div>
+    </div>
 
     <div class="order-container">
-        <h2 style="font-size: 18px; border-right: 3px solid var(--main); padding-right: 10px;">إضافة طلب جديد</h2>
+        <h2 style="font-size: 18px; border-right: 4px solid var(--main); padding-right: 12px; margin-bottom: 25px;">إضافة طلب جديد</h2>
         
-        <div id="loading"><i class="fas fa-spinner fa-spin"></i> جاري جلب جميع العروض...</div>
-
         <label>الفئة (Category)</label>
-        <select id="category" onchange="filterServices()"><option>تحميل الفئات...</option></select>
+        <select id="category" onchange="filterServices()"><option>تحميل...</option></select>
 
         <label>الخدمة (Service)</label>
         <select id="service" onchange="updateDetails()"><option>اختر الفئة أولاً...</option></select>
 
-        <label>وصف الخدمة</label>
-        <div id="service-desc" class="description-box">سيظهر هنا تفاصيل السرعة والضمان...</div>
+        <label>تفاصيل الخدمة</label>
+        <div id="service-desc" class="description-box">بانتظار اختيار الخدمة...</div>
 
         <label>الرابط (Link)</label>
-        <input type="text" id="link" placeholder="https://www.example.com/...">
+        <input type="text" id="link" placeholder="أدخل الرابط هنا...">
 
         <label>الكمية (Quantity)</label>
-        <input type="number" id="quantity" value="100" oninput="calculatePrice()">
+        <input type="number" id="quantity" value="1000" min="1" oninput="calculatePrice()">
 
-        <div style="display:flex; justify-content:space-between; padding:10px; background:rgba(255,0,0,0.1); border-radius:10px; margin-bottom:15px;">
-            <span>السعر الإجمالي:</span>
-            <span id="total-price" style="color:var(--main); font-weight:bold;">$0.00</span>
+        <div style="display:flex; justify-content:space-between; padding:15px; background:rgba(255,0,0,0.1); border-radius:12px; margin-bottom:20px; border: 1px dashed var(--main);">
+            <span>التكلفة الإجمالية:</span>
+            <span id="total-price" style="color:var(--main); font-weight:bold; font-size:18px;">$0.00</span>
         </div>
 
-        <button class="btn-order">تأكيد الطلب الآن</button>
+        <button class="btn-order">تأكيد وإرسال الطلب</button>
     </div>
 
     <script>
         // مفتاح API الخاص بك من الصورة
         const API_KEY = '9c3b0dbe1df040d32be6e2dc1dc12a68';
-        const PROXY_URL = 'https://api.allorigins.win/raw?url='; // لتجاوز حماية CORS
-        const API_URL = 'https://evoiy.com/api/v2?action=services&key=' + API_KEY;
+        // استخدام بروكسي موثوق لجلب البيانات دون حظر
+        const API_URL = `https://api.allorigins.win/get?url=${encodeURIComponent('https://evoiy.com/api/v2?action=services&key=' + API_KEY)}`;
 
         let allServices = [];
 
-        async function fetchAllServices() {
-            document.getElementById('loading').style.display = 'block';
+        async function fetchServices() {
             try {
-                const response = await fetch(PROXY_URL + encodeURIComponent(API_URL));
-                allServices = await response.json();
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                allServices = JSON.parse(data.contents);
                 
-                // استخراج الفئات الفريدة
-                const categories = [...new Set(allServices.map(s => s.category))];
+                // ترتيب الفئات أبجدياً وعرضها
+                const categories = [...new Set(allServices.map(s => s.category))].sort();
                 const catSelect = document.getElementById('category');
                 catSelect.innerHTML = '';
                 
@@ -86,10 +93,11 @@
                 });
 
                 filterServices();
+                document.getElementById('loading-overlay').style.display = 'none';
             } catch (error) {
-                alert('خطأ في جلب البيانات، يرجى تفعيل البروكسي أو التأكد من API KEY');
+                console.error("Error:", error);
+                alert("حدث خطأ في الاتصال بالسيرفر. تأكد من مفتاح الـ API.");
             }
-            document.getElementById('loading').style.display = 'none';
         }
 
         function filterServices() {
@@ -102,7 +110,9 @@
                 let option = document.createElement('option');
                 option.value = s.service;
                 option.setAttribute('data-rate', s.rate);
-                option.innerText = `${s.name} - $${s.rate}`;
+                option.setAttribute('data-min', s.min);
+                option.setAttribute('data-max', s.max);
+                option.innerText = `[${s.service}] ${s.name} - $${s.rate}`;
                 serSelect.appendChild(option);
             });
             updateDetails();
@@ -110,28 +120,31 @@
 
         function updateDetails() {
             const serSelect = document.getElementById('service');
-            const selectedId = serSelect.value;
-            const service = allServices.find(s => s.service == selectedId);
+            const selected = serSelect.options[serSelect.selectedIndex];
             
-            if(service) {
-                // عرض الوصف الأصلي من الموقع
-                document.getElementById('service-desc').innerText = `الحد الأدنى: ${service.min} | الحد الأقصى: ${service.max}`;
+            if(selected) {
+                const min = selected.getAttribute('data-min');
+                const max = selected.getAttribute('data-max');
+                const rate = selected.getAttribute('data-rate');
+                document.getElementById('service-desc').innerHTML = `
+                    <b>الحد الأدنى:</b> ${min} | <b>الحد الأقصى:</b> ${max} <br>
+                    <b>السعر لكل 1000:</b> $${rate}
+                `;
             }
             calculatePrice();
         }
 
         function calculatePrice() {
             const serSelect = document.getElementById('service');
-            const selectedOption = serSelect.options[serSelect.selectedIndex];
-            const rate = selectedOption ? parseFloat(selectedOption.getAttribute('data-rate')) : 0;
+            const selected = serSelect.options[serSelect.selectedIndex];
+            const rate = selected ? parseFloat(selected.getAttribute('data-rate')) : 0;
             const qty = parseInt(document.getElementById('quantity').value) || 0;
             
             const total = (rate * qty) / 1000;
             document.getElementById('total-price').innerText = "$" + total.toFixed(4);
         }
 
-        // بدء الجلب عند فتح الصفحة
-        window.onload = fetchAllServices;
+        window.onload = fetchServices;
     </script>
 </body>
 </html>
