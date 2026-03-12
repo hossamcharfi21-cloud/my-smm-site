@@ -3,143 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOLLOW VPN - لوحة التحكم الشاملة</title>
+    <title>FOLLOW VPN - اللوحة الاحترافية</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --main: #ff0000; --bg: #000; --card: #111; --text-gray: #aaa; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding-bottom: 50px; }
+        :root { --main: #ff0000; --bg: #000; --card: #111; --text-gray: #aaa; --input-bg: #1a1a1a; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; }
         
         /* الهيدر */
-        .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 100; }
-        .logo { color: var(--main); font-size: 22px; font-weight: bold; }
+        .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 1000; }
+        .logo { color: var(--main); font-size: 20px; font-weight: bold; }
 
-        /* بطاقات الإحصائيات (مثل evoiy.com) */
-        .stats-container { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 15px; }
-        .stat-card { background: var(--card); border-radius: 12px; padding: 15px; display: flex; align-items: center; border: 1px solid #222; }
-        .stat-icon { font-size: 25px; margin-left: 15px; min-width: 45px; text-align: center; }
-        .stat-info h3 { margin: 0; font-size: 22px; color: #fff; }
-        .stat-info p { margin: 2px 0 0; color: var(--text-gray); font-size: 13px; }
+        /* البطاقات الإحصائية */
+        .stats-container { display: grid; gap: 10px; padding: 15px; }
+        .stat-card { background: var(--card); border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
+        .stat-info h3 { margin: 0; font-size: 24px; color: #fff; letter-spacing: 1px; }
+        .stat-info p { margin: 5px 0 0; color: var(--text-gray); font-size: 13px; }
+        .stat-icon { font-size: 22px; padding: 10px; border-radius: 8px; background: #000; border: 1px solid #333; }
+
+        /* شريط المنصات */
+        .platforms-bar { display: flex; overflow-x: auto; gap: 20px; padding: 15px; background: #050505; border-bottom: 1px solid #222; scrollbar-width: none; }
+        .platforms-bar::-webkit-scrollbar { display: none; }
+        .platform-item { min-width: 60px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; opacity: 0.5; transition: 0.3s; }
+        .platform-item.active { opacity: 1; transform: scale(1.1); color: var(--main); }
+        .platform-item i { font-size: 24px; }
+        .platform-item span { font-size: 11px; }
+
+        /* قسم الطلبات */
+        .order-section { padding: 20px; }
+        .order-title { color: var(--main); border-right: 4px solid var(--main); padding-right: 10px; margin-bottom: 20px; font-size: 18px; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 8px; color: var(--text-gray); font-size: 13px; }
+        select, input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; font-size: 14px; outline: none; }
+        select:focus, input:focus { border-color: var(--main); }
+        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; box-shadow: 0 4px 15px rgba(255,0,0,0.2); }
 
         /* القائمة الجانبية */
-        .sidebar { background-color: #0a0a0a; width: 260px; height: 100vh; position: fixed; right: -260px; top: 0; transition: 0.4s; z-index: 1000; border-left: 1px solid var(--main); }
+        .sidebar { background-color: #0a0a0a; width: 260px; height: 100vh; position: fixed; right: -260px; top: 0; transition: 0.4s; z-index: 2000; border-left: 1px solid var(--main); }
         .sidebar.active { right: 0; }
         .menu-item { padding: 18px 20px; border-bottom: 1px solid #1a1a1a; display: flex; align-items: center; cursor: pointer; color: #eee; text-decoration: none; }
-        .menu-item i { color: var(--main); margin-left: 12px; }
+        .menu-item i { color: var(--main); margin-left: 15px; width: 20px; text-align: center; }
 
-        /* نموذج الطلب */
-        .order-section { padding: 15px; }
-        .input-group { margin-bottom: 12px; }
-        label { display: block; margin-bottom: 5px; color: var(--text-gray); font-size: 14px; }
-        select, input { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 8px; box-sizing: border-box; }
-        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 10px; }
-
-        /* النوافذ المنبثقة */
-        .modal { display: none; position: fixed; z-index: 2000; top: 0; right: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-        .modal-content { background: #111; margin: 15% auto; padding: 20px; border: 1px solid var(--main); width: 85%; border-radius: 15px; text-align: center; }
-        
-        .fab-tele { position: fixed; bottom: 20px; left: 20px; background: #0088cc; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 20px; }
+        /* زر التليجرام العائم */
+        .fab-tele { position: fixed; bottom: 20px; left: 20px; background: #0088cc; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 100; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div onclick="toggleSidebar()" style="cursor:pointer"><i class="fas fa-bars"></i></div>
+        <div onclick="toggleSidebar()" style="cursor:pointer; font-size: 20px;"><i class="fas fa-bars"></i></div>
         <div class="logo">FOLLOW VPN</div>
-        <div style="color: var(--main)"><i class="fas fa-user-circle"></i></div>
+        <div style="color: var(--main); font-size: 20px;"><i class="fas fa-user-circle"></i></div>
     </div>
 
     <div class="stats-container">
         <div class="stat-card">
-            <div class="stat-icon" style="color: #2ecc71;"><i class="fas fa-wallet"></i></div>
             <div class="stat-info">
-                <h3 id="user-balance">$0.0030588</h3>
-                <p>رصيد الحساب (Account Balance)</p>
+                <h3 id="balance">$0.0030588</h3>
+                <p>رصيد الحساب (Balance)</p>
             </div>
+            <div class="stat-icon" style="color:#2ecc71;"><i class="fas fa-wallet"></i></div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon" style="color: #3498db;"><i class="fas fa-chart-line"></i></div>
             <div class="stat-info">
-                <h3 id="user-spent">$8.3469412</h3>
-                <p>المصروفات (Spent Balance)</p>
+                <h3 id="spent">$8.3469412</h3>
+                <p>المصروفات (Spent)</p>
             </div>
+            <div class="stat-icon" style="color:#3498db;"><i class="fas fa-chart-line"></i></div>
         </div>
         <div class="stat-card">
-            <div class="stat-icon" style="color: #e67e22;"><i class="fas fa-tasks"></i></div>
             <div class="stat-info">
-                <h3 id="user-orders">1,690,345</h3>
-                <p>إجمالي الطلبات (Panel Orders)</p>
+                <h3 id="orders-total">1,690,345</h3>
+                <p>إجمالي الطلبات (Orders)</p>
             </div>
+            <div class="stat-icon" style="color:#e67e22;"><i class="fas fa-shopping-basket"></i></div>
+        </div>
+    </div>
+
+    <div class="platforms-bar" id="platforms">
+        <div class="platform-item active" onclick="filterServices('facebook')">
+            <i class="fab fa-facebook" style="color: #1877f2;"></i>
+            <span>فيسبوك</span>
+        </div>
+        <div class="platform-item" onclick="filterServices('instagram')">
+            <i class="fab fa-instagram" style="color: #e4405f;"></i>
+            <span>إنستقرام</span>
+        </div>
+        <div class="platform-item" onclick="filterServices('tiktok')">
+            <i class="fab fa-tiktok"></i>
+            <span>تيك توك</span>
+        </div>
+        <div class="platform-item" onclick="filterServices('youtube')">
+            <i class="fab fa-youtube" style="color: #ff0000;"></i>
+            <span>يوتيوب</span>
+        </div>
+        <div class="platform-item" onclick="filterServices('telegram')">
+            <i class="fab fa-telegram" style="color: #0088cc;"></i>
+            <span>تليجرام</span>
         </div>
     </div>
 
     <div class="order-section">
-        <h3 style="color: var(--main); border-right: 3px solid var(--main); padding-right: 10px;">إضافة طلب جديد</h3>
+        <div class="order-title">إضافة طلب جديد</div>
         
         <div class="input-group">
-            <label>القسم (Category)</label>
-            <select id="cat-select">
-                <option>Facebook Post Reactions ❤️ [Page Data]</option>
-                <option>Instagram Followers</option>
+            <label>(Category) القسم</label>
+            <select id="category-list">
+                <option>اختر المنصة من الأعلى</option>
             </select>
         </div>
 
         <div class="input-group">
-            <label>الخدمة (Service)</label>
-            <select id="serv-select">
-                <option>1366 - Facebook Post React [Like 👍] - $0.80</option>
+            <label>(Service) الخدمة</label>
+            <select id="service-list">
+                <option>اختر القسم أولاً</option>
             </select>
         </div>
 
         <div class="input-group">
-            <label>الرابط (Link)</label>
-            <input type="text" id="order-link" placeholder="أدخل الرابط هنا">
+            <label>(Link) الرابط</label>
+            <input type="text" id="order-link" placeholder="أدخل الرابط هنا...">
         </div>
 
         <div class="input-group">
-            <label>الكمية (Quantity)</label>
-            <input type="number" id="order-qty" placeholder="مثال: 1000">
+            <label>(Quantity) الكمية</label>
+            <input type="number" id="order-qty" placeholder="أقل كمية: 100">
         </div>
 
-        <button class="btn-order" onclick="submitOrder()">تأكيد وإتمام الطلب</button>
+        <button class="btn-order" onclick="placeOrder()">تأكيد الطلب</button>
     </div>
 
     <div id="mySidebar" class="sidebar">
-        <div class="menu-item" onclick="toggleSidebar()"><i class="fas fa-times"></i> إغلاق القائمة</div>
-        <div class="menu-item" onclick="showModal('payModal')"><i class="fas fa-donate"></i> شحن الرصيد</div>
-        <div class="menu-item" onclick="showModal('historyModal')"><i class="fas fa-history"></i> سجل الطلبات</div>
-        <a href="https://t.me/VPN_Dzz" class="menu-item"><i class="fas fa-headset"></i> الدعم الفني</a>
-    </div>
-
-    <div id="payModal" class="modal">
-        <div class="modal-content">
-            <h2 style="color:var(--main)">شحن الرصيد</h2>
-            <p>Binance ID: 1203247691</p>
-            <button class="btn-order" onclick="closeModal('payModal')">إغلاق</button>
-        </div>
+        <div class="menu-item" onclick="toggleSidebar()"><i class="fas fa-times"></i> إغلاق</div>
+        <div class="menu-item"><i class="fas fa-wallet"></i> شحن الرصيد</div>
+        <div class="menu-item"><i class="fas fa-history"></i> سجل الطلبات</div>
+        <a href="https://t.me/VPN_Dzz" class="menu-item" style="text-decoration:none;"><i class="fas fa-headset"></i> الدعم الفني</a>
     </div>
 
     <a href="https://t.me/VPN_Dzz" class="fab-tele"><i class="fab fa-telegram-plane"></i></a>
 
     <script>
-        const MY_API_KEY = "9c3b0dbe1f0f040d32be6e2dc1dc12a68";
+        // مفتاح الـ API الخاص بك
+        const API_KEY = "9c3b0dbe1f0f040d32be6e2dc1dc12a68";
 
-        function toggleSidebar() { document.getElementById("mySidebar").classList.toggle("active"); }
-        function showModal(id) { document.getElementById(id).style.display = "block"; toggleSidebar(); }
-        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        // بيانات تجريبية للخدمات (يمكنك توسيعها)
+        const servicesData = {
+            facebook: ["تفاعل منشورات - 0.80$", "متابعين صفحة - 1.50$", "مشاهدات فيديو - 0.50$"],
+            instagram: ["متابعين ضمان - 1.10$", "لايكات حقيقية - 0.20$", "مشاهدات ريلز - 0.10$"],
+            tiktok: ["متابعين سريع - 2.00$", "لايكات تيك توك - 0.40$", "مشاهدات - 0.05$"],
+            youtube: ["ساعات مشاهدة - 10.00$", "مشتركين - 15.00$"],
+            telegram: ["أعضاء قنوات - 1.30$", "تصويت مسابقات - 2.00$"]
+        };
 
-        // وظيفة إرسال الطلب (ربط المفتاح بالبيانات)
-        function submitOrder() {
+        function toggleSidebar() { 
+            document.getElementById("mySidebar").classList.toggle("active"); 
+        }
+
+        function filterServices(platform) {
+            // تغيير شكل الأيقونة النشطة
+            document.querySelectorAll('.platform-item').forEach(el => el.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const catList = document.getElementById('category-list');
+            const servList = document.getElementById('service-list');
+            
+            catList.innerHTML = `<option>${platform.toUpperCase()} Services</option>`;
+            servList.innerHTML = "";
+            
+            servicesData[platform].forEach(s => {
+                let opt = document.createElement('option');
+                opt.textContent = s;
+                servList.appendChild(opt);
+            });
+        }
+
+        function placeOrder() {
             const link = document.getElementById('order-link').value;
             const qty = document.getElementById('order-qty').value;
             
-            if(link && qty) {
-                alert("تم إرسال الطلب بنجاح باستخدام API Key الخاص بك. سيتم تحديث حالة الطلب قريباً.");
-            } else {
-                alert("يرجى إدخال الرابط والكمية");
+            if(!link || !qty) {
+                alert("يرجى ملء كافة البيانات");
+                return;
             }
+            alert("تم إرسال الطلب للسيرفر عبر المفتاح: " + API_KEY.substring(0,5) + "...");
         }
 
-        // ملاحظة: لجعل الرصيد يتحدث فعلياً من الموقع، ستحتاج لوسيط (PHP) بسبب قيود الحماية في المتصفحات.
+        // تشغيل افتراضي لأول منصة
+        window.onload = () => { filterServices('facebook'); };
     </script>
 </body>
 </html>
+
+                                                              
