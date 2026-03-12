@@ -3,182 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FOLLOW VPN - اللوحة المتكاملة</title>
+    <title>FOLLOW VPN - اللوحة الشاملة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --main: #ff0000; --bg: #000; --card: #111; --text-gray: #aaa; --input-bg: #1a1a1a; }
-        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; }
+        body { background-color: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; overflow-x: hidden; }
         
-        /* الهيدر */
         .header { background: var(--card); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main); position: sticky; top: 0; z-index: 1000; }
         .logo { color: var(--main); font-size: 20px; font-weight: bold; }
 
-        /* البطاقات الإحصائية */
-        .stats-container { display: grid; gap: 10px; padding: 15px; }
-        .stat-card { background: var(--card); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border: 1px solid #222; }
-        .stat-info h3 { margin: 0; font-size: 22px; color: #fff; }
-        .stat-info p { margin: 5px 0 0; color: var(--text-gray); font-size: 12px; }
+        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .stat-card { background: var(--card); border-radius: 12px; padding: 12px; border: 1px solid #222; text-align: center; }
+        .stat-card h3 { margin: 0; font-size: 16px; color: #fff; }
+        .stat-card p { margin: 5px 0 0; color: var(--text-gray); font-size: 10px; }
 
-        /* شريط المنصات */
-        .platforms-bar { display: flex; overflow-x: auto; gap: 20px; padding: 15px; background: #050505; border-bottom: 1px solid #222; scrollbar-width: none; }
+        .platforms-bar { display: flex; overflow-x: auto; gap: 15px; padding: 15px; background: #050505; border-bottom: 1px solid #222; scrollbar-width: none; }
         .platforms-bar::-webkit-scrollbar { display: none; }
         .platform-item { min-width: 60px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; opacity: 0.5; transition: 0.3s; }
         .platform-item.active { opacity: 1; transform: scale(1.1); color: var(--main); }
-        .platform-item i { font-size: 22px; }
 
-        /* قسم الطلبات */
         .order-section { padding: 20px; }
         .order-title { color: var(--main); border-right: 4px solid var(--main); padding-right: 10px; margin-bottom: 20px; font-size: 18px; font-weight: bold; }
         .input-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 8px; color: var(--text-gray); font-size: 13px; }
-        select, input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; font-size: 14px; outline: none; transition: 0.3s; }
-        select:focus, input:focus { border-color: var(--main); }
+        select, input { width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid #333; color: #fff; border-radius: 10px; box-sizing: border-box; font-size: 13px; outline: none; }
 
-        /* خانة السعر */
-        .price-display { background: rgba(255,0,0,0.1); border: 1px dashed var(--main); padding: 15px; border-radius: 10px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .price-display span { color: var(--main); font-weight: bold; font-size: 18px; }
+        .price-box { background: rgba(255,0,0,0.1); border: 1px dashed var(--main); padding: 15px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+        .price-box span { color: var(--main); font-weight: bold; font-size: 18px; }
 
-        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
+        .btn-order { background: var(--main); color: #fff; border: none; width: 100%; padding: 16px; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; }
 
-        .fab-tele { position: fixed; bottom: 20px; left: 20px; background: #0088cc; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; z-index: 100; }
+        /* نافذة الدفع */
+        .modal { display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+        .modal-content { background: #111; margin: 15% auto; padding: 25px; width: 80%; border-radius: 15px; border: 1px solid var(--main); text-align: center; }
+        .pay-id { background: #1a1a1a; padding: 15px; border-radius: 8px; color: #f3ba2f; font-size: 20px; font-weight: bold; margin: 15px 0; border: 1px solid #333; }
+
+        .fab-tele { position: fixed; bottom: 20px; left: 20px; background: #0088cc; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; text-decoration: none; font-size: 24px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div onclick="toggleSidebar()" style="cursor:pointer;"><i class="fas fa-bars"></i></div>
+        <div onclick="alert('سجل الطلبات قريباً')" style="cursor:pointer;"><i class="fas fa-bars"></i></div>
         <div class="logo">FOLLOW VPN</div>
         <div style="color: var(--main);"><i class="fas fa-user-circle"></i></div>
     </div>
 
     <div class="stats-container">
-        <div class="stat-card">
-            <div class="stat-info"><h3 id="balance">$0.0030588</h3><p>رصيد الحساب</p></div>
-            <i class="fas fa-wallet" style="color:#2ecc71"></i>
-        </div>
+        <div class="stat-card"><h3>$0.00305</h3><p>الرصيد</p></div>
+        <div class="stat-card"><h3>$8.346</h3><p>المصروفات</p></div>
+        <div class="stat-card"><h3>1,690,345</h3><p>إجمالي الطلبات</p></div>
+        <div class="stat-card" onclick="openPay()" style="background:var(--main); border:none; cursor:pointer;"><h3>شحن رصيد</h3><p style="color:#fff">اضغط هنا</p></div>
     </div>
 
     <div class="platforms-bar">
-        <div class="platform-item active" onclick="updateCategory('facebook')"><i class="fab fa-facebook" style="color:#1877f2"></i><span>فيسبوك</span></div>
-        <div class="platform-item" onclick="updateCategory('instagram')"><i class="fab fa-instagram" style="color:#e4405f"></i><span>إنستقرام</span></div>
-        <div class="platform-item" onclick="updateCategory('tiktok')"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
-        <div class="platform-item" onclick="updateCategory('youtube')"><i class="fab fa-youtube" style="color:#ff0000"></i><span>يوتيوب</span></div>
-        <div class="platform-item" onclick="updateCategory('telegram')"><i class="fab fa-telegram" style="color:#0088cc"></i><span>تليجرام</span></div>
+        <div class="platform-item active" onclick="updateUI('fb')"><i class="fab fa-facebook" style="color:#1877f2"></i><span>فيسبوك</span></div>
+        <div class="platform-item" onclick="updateUI('ig')"><i class="fab fa-instagram" style="color:#e4405f"></i><span>إنستقرام</span></div>
+        <div class="platform-item" onclick="updateUI('tk')"><i class="fab fa-tiktok"></i><span>تيك توك</span></div>
+        <div class="platform-item" onclick="updateUI('yt')"><i class="fab fa-youtube" style="color:#ff0000"></i><span>يوتيوب</span></div>
+        <div class="platform-item" onclick="updateUI('tg')"><i class="fab fa-telegram" style="color:#0088cc"></i><span>تليجرام</span></div>
+        <div class="platform-item" onclick="updateUI('x')"><i class="fab fa-x-twitter"></i><span>منصة X</span></div>
     </div>
 
     <div class="order-section">
         <div class="order-title">إضافة طلب جديد</div>
+        <div class="input-group"><label>الفئة (Category)</label><select id="cat" onchange="updateServ()"></select></div>
+        <div class="input-group"><label>الخدمة (Service)</label><select id="ser" onchange="calc()"></select></div>
+        <div class="input-group"><label>الرابط (Link)</label><input type="text" id="link" placeholder="أدخل الرابط هنا"></div>
+        <div class="input-group"><label>الكمية (Quantity)</label><input type="number" id="qty" oninput="calc()" value="1000"></div>
         
-        <div class="input-group">
-            <label>الفئة (Category)</label>
-            <select id="category-select" onchange="updateServices()"></select>
-        </div>
+        <div class="price-box"><span>الثمن الإجمالي:</span><span id="total">$0.00</span></div>
+        <button class="btn-order" onclick="sendOrder()">تأكيد الطلب</button>
+    </div>
 
-        <div class="input-group">
-            <label>الخدمة (Service)</label>
-            <select id="service-select" onchange="calculatePrice()"></select>
+    <div id="payModal" class="modal">
+        <div class="modal-content">
+            <h3 style="color:var(--main)">شحن الرصيد عبر Binance</h3>
+            <p style="font-size:13px; color:#888">يرجى نسخ الرقم والدفع عبر Binance Pay</p>
+            <div class="pay-id">1203247691</div>
+            <p style="font-size:12px;">بعد الدفع، أرسل اللقطة للدعم الفني</p>
+            <button class="btn-order" onclick="closePay()">إغلاق</button>
         </div>
-
-        <div class="input-group">
-            <label>الرابط (Link)</label>
-            <input type="text" placeholder="أدخل الرابط هنا">
-        </div>
-
-        <div class="input-group">
-            <label>الكمية (Quantity)</label>
-            <input type="number" id="quantity" oninput="calculatePrice()" placeholder="أقل كمية: 100">
-        </div>
-
-        <div class="price-display">
-            <p style="margin:0; font-size:14px;">إجمالي الثمن المتوقع:</p>
-            <span id="total-price">$0.00</span>
-        </div>
-
-        <button class="btn-order">تأكيد الطلب</button>
     </div>
 
     <a href="https://t.me/VPN_Dzz" class="fab-tele"><i class="fab fa-telegram-plane"></i></a>
 
     <script>
-        // قاعدة بيانات العروض (يمكنك إضافة كل عروض الموقع هنا بنفس التنسيق)
-        const allData = {
-            facebook: {
-                categories: ["فيسبوك تفاعل [الأرخص]", "فيسبوك متابعين", "مشاهدات فيديوهات"],
-                services: {
-                    "فيسبوك تفاعل [الأرخص]": [
-                        {id: 1366, name: "تفاعل منشورات (Like) - $0.80", price: 0.80},
-                        {id: 1367, name: "تفاعل منشورات (Love) - $0.95", price: 0.95}
+        // قاعدة البيانات الكاملة لجميع العروض كما في الصور
+        const db = {
+            fb: {
+                cats: ["فيسبوك تفاعل منشورات ❤️ [الأرخص]", "فيسبوك متابعين صفحة/بروفايل", "فيسبوك مشاهدات فيديو"],
+                servs: {
+                    "فيسبوك تفاعل منشورات ❤️ [الأرخص]": [
+                        {n: "1366 - Facebook Post React [Like 👍] - $0.80", p: 0.80},
+                        {n: "1367 - Facebook Post React [Love ❤️] - $0.95", p: 0.95},
+                        {n: "تفاعل منشورات (خلط عشوائي) - $0.75", p: 0.75}
                     ],
-                    "فيسبوك متابعين": [
-                        {id: 1400, name: "متابعين صفحة ضمان - $1.50", price: 1.50}
+                    "فيسبوك متابعين صفحة/بروفايل": [
+                        {n: "متابعين صفحة (جودة عالية) - $1.40", p: 1.40},
+                        {n: "متابعين بروفايل (سريع) - $1.20", p: 1.20}
+                    ],
+                    "فيسبوك مشاهدات فيديو": [
+                        {n: "مشاهدات فيديو 3 ثواني - $0.10", p: 0.10},
+                        {n: "مشاهدات ريلز فيسبوك - $0.15", p: 0.15}
                     ]
                 }
             },
-            instagram: {
-                categories: ["إنستغرام متابعين", "إنستغرام لايكات"],
-                services: {
-                    "إنستغرام متابعين": [
-                        {id: 2001, name: "متابعين ضمان 30 يوم - $1.10", price: 1.10}
+            ig: {
+                cats: ["إنستغرام متابعين [ضمان]", "إنستغرام لايكات [حقيقي]", "إنستغرام مشاهدات ريلز"],
+                servs: {
+                    "إنستغرام متابعين [ضمان]": [
+                        {n: "متابعين ضمان 30 يوم - $0.90", p: 0.90},
+                        {n: "متابعين ضمان مدى الحياة - $1.50", p: 1.50}
                     ],
-                    "إنستغرام لايكات": [
-                        {id: 2005, name: "لايكات حقيقية - $0.20", price: 0.20}
+                    "إنستغرام لايكات [حقيقي]": [
+                        {n: "لايكات سريعة جداً - $0.18", p: 0.18}
+                    ],
+                    "إنستغرام مشاهدات ريلز": [
+                        {n: "مشاهدات ريلز (مليون/ساعة) - $0.05", p: 0.05}
                     ]
                 }
             },
-            tiktok: {
-                categories: ["تيك توك مشاهدات", "تيك توك متابعين"],
-                services: {
-                    "تيك توك مشاهدات": [
-                        {id: 3001, name: "مشاهدات سريعة - $0.05", price: 0.05}
+            tk: {
+                cats: ["تيك توك مشاهدات 🔥", "تيك توك متابعين [NEW]", "تيك توك إعجابات"],
+                servs: {
+                    "تيك توك مشاهدات 🔥": [
+                        {n: "مشاهدات تيك توك (تحدي السوق) - $0.01", p: 0.01},
+                        {n: "مشاهدات تيك توك (سريع جداً) - $0.03", p: 0.03}
                     ],
-                    "تيك توك متابعين": [
-                        {id: 3005, name: "متابعين سريع - $2.00", price: 2.00}
+                    "تيك توك متابعين [NEW]": [
+                        {n: "متابعين تيك توك (جودة تايوان) - $1.80", p: 1.80},
+                        {n: "متابعين تيك توك (حسابات حقيقية) - $2.50", p: 2.50}
+                    ],
+                    "تيك توك إعجابات": [
+                        {n: "إعجابات تيك توك (سريع) - $0.40", p: 0.40}
+                    ]
+                }
+            },
+            yt: {
+                cats: ["يوتيوب مشاهدات [بدون نقص]", "يوتيوب مشتركين"],
+                servs: {
+                    "يوتيوب مشاهدات [بدون نقص]": [
+                        {n: "مشاهدات يوتيوب (ضمان مدى الحياة) - $1.90", p: 1.90}
+                    ],
+                    "يوتيوب مشتركين": [
+                        {n: "مشتركين يوتيوب (حقيقي) - $12.00", p: 12.00}
+                    ]
+                }
+            },
+            tg: {
+                cats: ["تليجرام أعضاء قنوات", "تليجرام تصويت مسابقات"],
+                servs: {
+                    "تليجرام أعضاء قنوات": [
+                        {n: "أعضاء قنوات (عربي/مختلط) - $1.30", p: 1.30}
+                    ],
+                    "تليجرام تصويت مسابقات": [
+                        {n: "تصويت مسابقات (سريع جداً) - $2.10", p: 2.10}
+                    ]
+                }
+            },
+            x: {
+                cats: ["X (Twitter) Followers", "X (Twitter) Likes"],
+                servs: {
+                    "X (Twitter) Followers": [
+                        {n: "Twitter Followers (Real) - $3.50", p: 3.50}
+                    ],
+                    "X (Twitter) Likes": [
+                        {n: "Twitter Likes - $1.10", p: 1.10}
                     ]
                 }
             }
-            // يمكنك إضافة يوتيوب وتليجرام بنفس الطريقة
         };
 
-        let currentPlatform = 'facebook';
+        let curP = 'fb';
 
-        function updateCategory(platform) {
-            currentPlatform = platform;
-            document.querySelectorAll('.platform-item').forEach(el => el.classList.remove('active'));
+        function updateUI(p) {
+            curP = p;
+            document.querySelectorAll('.platform-item').forEach(e => e.classList.remove('active'));
             event.currentTarget.classList.add('active');
-            
-            const catSelect = document.getElementById('category-select');
-            catSelect.innerHTML = "";
-            
-            allData[platform].categories.forEach(cat => {
-                let opt = document.createElement('option');
-                opt.value = cat; opt.textContent = cat;
-                catSelect.appendChild(opt);
-            });
-            updateServices();
+            const cS = document.getElementById('cat');
+            cS.innerHTML = "";
+            db[p].cats.forEach(c => cS.innerHTML += `<option>${c}</option>`);
+            updateServ();
         }
 
-        function updateServices() {
-            const cat = document.getElementById('category-select').value;
-            const servSelect = document.getElementById('service-select');
-            servSelect.innerHTML = "";
-            
-            allData[currentPlatform].services[cat].forEach(s => {
-                let opt = document.createElement('option');
-                opt.value = s.price;
-                opt.textContent = s.name;
-                servSelect.appendChild(opt);
-            });
-            calculatePrice();
+        function updateServ() {
+            const cat = document.getElementById('cat').value;
+            const sS = document.getElementById('ser');
+            sS.innerHTML = "";
+            db[curP].servs[cat].forEach(s => sS.innerHTML += `<option value="${s.p}">${s.n}</option>`);
+            calc();
         }
 
-        function calculatePrice() {
-            const pricePerThousand = parseFloat(document.getElementById('service-select').value);
-            const qty = parseFloat(document.getElementById('quantity').value) || 0;
-            const total = (pricePerThousand * qty) / 1000;
-            document.getElementById('total-price').innerText = "$" + total.toFixed(4);
+        function calc() {
+            const p = document.getElementById('ser').value || 0;
+            const q = document.getElementById('qty').value || 0;
+            document.getElementById('total').innerText = "$" + ((p * q) / 1000).toFixed(4);
         }
 
-        window.onload = () => { updateCategory('facebook'); };
+        function openPay() { document.getElementById('payModal').style.display='block'; }
+        function closePay() { document.getElementById('payModal').style.display='none'; }
+        
+        function sendOrder() {
+            const link = document.getElementById('link').value;
+            if(!link) return alert("يرجى وضع الرابط أولاً");
+            alert("تم إرسال طلبك بنجاح! سيتم التنفيذ خلال دقائق.");
+        }
+
+        window.onload = () => updateUI('fb');
     </script>
 </body>
 </html>
