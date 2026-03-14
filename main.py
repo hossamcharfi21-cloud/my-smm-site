@@ -9,10 +9,9 @@ import telebot
 from telebot import types
 import os
 
-# --- الإعدادات المحدثة والمصلحة ---
+# --- الإعدادات ---
 API_TOKEN = '8536497984:AAFreSUHUUp12w_SNs2WH1RQO3KNcBhqmyk'
 ADMIN_ID = 6671521979 
-# تم تغيير المعرف الرقمي إلى المعرف النصي لحل مشكلة Chat Not Found
 POST_CHANNEL_ID = '@BB_VBN' 
 CHANNELS = ['@BB_VBN', '@VPN_Dzz'] 
 
@@ -72,12 +71,16 @@ def get_text(message):
         bot.send_message(message.chat.id, "⚠️ يرجى إرسال نص الإعلان.")
         return
     user_data[message.chat.id]['text'] = message.text
-    msg = bot.send_message(message.chat.id, "📸 أرسل صورة، أو /skip للتخطي:")
+    msg = bot.send_message(message.chat.id, "📸 أرسل صورة، أو أرسل كلمة /skip للتخطي:")
     bot.register_next_step_handler(msg, get_photo_or_skip)
 
 def get_photo_or_skip(message):
+    # فحص إذا كان المستخدم أرسل صورة أو اختار التخطي
     if message.content_type == 'photo':
         user_data[message.chat.id]['photo'] = message.photo[-1].file_id
+    elif message.text == '/skip':
+        user_data[message.chat.id]['photo'] = None
+    
     finish_ad(message)
 
 def finish_ad(message):
@@ -92,10 +95,13 @@ def finish_ad(message):
     markup.add(types.InlineKeyboardButton("✅ قبول", callback_data=f"acc_{message.chat.id}"),
                types.InlineKeyboardButton("❌ رفض", callback_data=f"rej_{message.chat.id}"))
     
-    if data['photo']:
-        bot.send_photo(ADMIN_ID, data['photo'], caption=caption, reply_markup=markup, parse_mode='Markdown')
-    else:
-        bot.send_message(ADMIN_ID, caption, reply_markup=markup, parse_mode='Markdown')
+    try:
+        if data['photo']:
+            bot.send_photo(ADMIN_ID, data['photo'], caption=caption, reply_markup=markup, parse_mode='Markdown')
+        else:
+            bot.send_message(ADMIN_ID, caption, reply_markup=markup, parse_mode='Markdown')
+    except Exception as e:
+        print(f"Error sending to admin: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith(("acc_", "rej_")))
 def handle_ad(call):
@@ -103,6 +109,7 @@ def handle_ad(call):
     u_id = int(u_id)
     
     if action == "acc":
+        # محاولة استخراج النص سواء من كابشن الصورة أو رسالة نصية
         original_caption = call.message.caption if call.message.content_type == 'photo' else call.message.text
         if original_caption:
             clean_text = original_caption.replace("🚨 **طلب جديد**", "✨ **إعلان معتمد** ✨")
@@ -124,7 +131,12 @@ def handle_ad(call):
         bot.delete_message(call.message.chat.id, call.message.message_id)
     except: pass
 
+# --- تشغيل البوت بنظام حماية من التعارض ---
 if __name__ == "__main__":
-    bot.remove_webhook()
-    print("Bot is starting...")
-    bot.infinity_polling(skip_pending=True)
+    try:
+        bot.remove_webhook()
+        print("Bot is starting...")
+        # استخدام إعدادات بولينج أكثر استقراراً للسيرفرات
+        bot.infinity_polling(skip_pending=True, timeout=60, long_polling_timeout=60)
+    except Exception as e:
+        print(f"Polling Error: {e}")
