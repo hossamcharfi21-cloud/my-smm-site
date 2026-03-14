@@ -9,10 +9,11 @@ import telebot
 from telebot import types
 import os
 
-# --- الإعدادات المحدثة ---
+# --- الإعدادات المحدثة والمصلحة ---
 API_TOKEN = '8536497984:AAFreSUHUUp12w_SNs2WH1RQO3KNcBhqmyk'
 ADMIN_ID = 6671521979 
-POST_CHANNEL_ID = -1002264625293 
+# تم تغيير المعرف الرقمي إلى المعرف النصي لحل مشكلة Chat Not Found
+POST_CHANNEL_ID = '@BB_VBN' 
 CHANNELS = ['@BB_VBN', '@VPN_Dzz'] 
 
 bot = telebot.TeleBot(API_TOKEN)
@@ -124,7 +125,6 @@ def handle_ad(call):
     except: pass
 
 if __name__ == "__main__":
-    # تنظيف أي روابط قديمة وتشغيل البوت
     bot.remove_webhook()
     print("Bot is starting...")
     bot.infinity_polling(skip_pending=True)
