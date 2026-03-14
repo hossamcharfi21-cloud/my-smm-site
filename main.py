@@ -10,7 +10,7 @@ from telebot import types
 import time
 
 # --- الإعدادات ---
-API_TOKEN = '8006279733:AAFAvAMcZr09QEJmG1SlLHmTl55e0IqhBx8'
+API_TOKEN = '8536497984:AAEfSfujRDi3rteJhgE7jdVFJPDwoqd3hzk'
 ADMIN_ID = 6671521979 
 
 # قائمة القنوات المطلوب الاشتراك بها
