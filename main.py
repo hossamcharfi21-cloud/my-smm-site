@@ -9,7 +9,7 @@ import telebot
 from telebot import types
 import time
 
-# --- الإعدادات ---
+# --- الإعدادات المعدلة بالتوكن الجديد ---
 API_TOKEN = '8536497984:AAEfSfujRDi3rteJhgE7jdVFJPDwoqd3hzk'
 ADMIN_ID = 6671521979 
 
@@ -88,11 +88,10 @@ def get_text(message):
     bot.register_next_step_handler(msg, get_photo_or_skip)
 
 def get_photo_or_skip(message):
-    # تحسين استقبال الميديا لضمان عدم ضياع الطلب
     if message.content_type == 'photo':
         user_data[message.chat.id]['photo'] = message.photo[-1].file_id
         finish_ad(message)
-    elif message.content_type == 'document': # دعم إرسال الصور كملفات
+    elif message.content_type == 'document': 
         user_data[message.chat.id]['photo'] = message.document.file_id
         finish_ad(message)
     elif message.text == '/skip':
@@ -105,11 +104,10 @@ def get_photo_or_skip(message):
 
 def finish_ad(message):
     data = user_data.get(message.chat.id)
-    if not data: return # حماية في حال مسح البيانات من الذاكرة
+    if not data: return 
 
     bot.send_message(message.chat.id, "✅ تم إرسال طلبك للإدارة للمراجعة.")
     
-    # رسالة الإدارة مع "الأيدي" المطلوب
     caption = (f"🚨 **إعلان جديد للمراجعة**\n\n"
                f"📌 **النوع:** {data['type']}\n"
                f"📝 **التفاصيل:**\n{data['text']}\n\n"
@@ -123,7 +121,6 @@ def finish_ad(message):
     )
     
     if data['photo']:
-        # نحاول إرسالها كصورة، إذا فشل (مثلاً كانت ملف فيديو أو مستند غريب) نرسلها كرسالة
         try:
             bot.send_photo(ADMIN_ID, data['photo'], caption=caption, reply_markup=markup, parse_mode="Markdown")
         except:
@@ -136,7 +133,6 @@ def handle_ad(call):
     action, u_id = call.data.split('_')
     u_id = int(u_id)
     
-    # استخراج النص من الرسالة الأصلية
     original_text = call.message.caption if call.message.content_type == 'photo' else call.message.text
     
     if action == "acc":
@@ -164,5 +160,6 @@ def handle_ad(call):
 
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
-print("🚀 البوت يعمل الآن بنظام الأيدي والقناتين والحماية...")
-bot.polling(none_stop=True)
+if __name__ == "__main__":
+    print("🚀 البوت يعمل الآن بنظام الأيدي والقناتين والحماية...")
+    bot.infinity_polling()
