@@ -9,13 +9,11 @@ import telebot
 from telebot import types
 import time
 
-# --- الإعدادات المعدلة بالتوكن الجديد ---
+# التوكن الجديد الذي أرسلته
 API_TOKEN = '8536497984:AAEfSfujRDi3rteJhgE7jdVFJPDwoqd3hzk'
 ADMIN_ID = 6671521979 
 
-# قائمة القنوات المطلوب الاشتراك بها
 CHANNELS = ['@BB_VBN', '@VPN_Dzz'] 
-# القناة التي يتم النشر فيها عند القبول
 POST_CHANNEL = '@BB_VBN' 
 
 bot = telebot.TeleBot(API_TOKEN)
@@ -84,20 +82,15 @@ def get_text(message):
         return
         
     user_data[message.chat.id]['text'] = message.text
-    msg = bot.send_message(message.chat.id, "📸 أرسل صورة للإعلان (أو ملف)، أو أرسل /skip للنشر بدون صورة:")
+    msg = bot.send_message(message.chat.id, "📸 أرسل صورة للإعلان، أو أرسل /skip للنشر بدون صورة:")
     bot.register_next_step_handler(msg, get_photo_or_skip)
 
 def get_photo_or_skip(message):
     if message.content_type == 'photo':
         user_data[message.chat.id]['photo'] = message.photo[-1].file_id
         finish_ad(message)
-    elif message.content_type == 'document': 
-        user_data[message.chat.id]['photo'] = message.document.file_id
-        finish_ad(message)
     elif message.text == '/skip':
         finish_ad(message)
-    elif message.text == '/start':
-        start(message)
     else:
         bot.send_message(message.chat.id, "⚠️ يرجى إرسال صورة أو ضغط /skip فقط.")
         bot.register_next_step_handler(message, get_photo_or_skip)
@@ -105,61 +98,25 @@ def get_photo_or_skip(message):
 def finish_ad(message):
     data = user_data.get(message.chat.id)
     if not data: return 
-
-    bot.send_message(message.chat.id, "✅ تم إرسال طلبك للإدارة للمراجعة.")
+    bot.send_message(message.chat.id, "✅ تم إرسال طلبك للإدارة.")
     
-    caption = (f"🚨 **إعلان جديد للمراجعة**\n\n"
-               f"📌 **النوع:** {data['type']}\n"
-               f"📝 **التفاصيل:**\n{data['text']}\n\n"
-               f"👤 **الناشر:** @{data['username']}\n"
-               f"🆔 **الأيدي:** `{data['user_id']}`")
-    
+    caption = (f"🚨 **إعلان جديد للمراجعة**\n\n📌 النوع: {data['type']}\n👤 الناشر: @{data['username']}")
     markup = types.InlineKeyboardMarkup()
-    markup.add(
-        types.InlineKeyboardButton("✅ قبول", callback_data=f"acc_{message.chat.id}"),
-        types.InlineKeyboardButton("❌ رفض", callback_data=f"rej_{message.chat.id}")
-    )
+    markup.add(types.InlineKeyboardButton("✅ قبول", callback_data=f"acc_{message.chat.id}"),
+               types.InlineKeyboardButton("❌ رفض", callback_data=f"rej_{message.chat.id}"))
     
     if data['photo']:
-        try:
-            bot.send_photo(ADMIN_ID, data['photo'], caption=caption, reply_markup=markup, parse_mode="Markdown")
-        except:
-            bot.send_message(ADMIN_ID, caption + "\n\n(مرفق ملف أعلاه)", reply_markup=markup, parse_mode="Markdown")
+        bot.send_photo(ADMIN_ID, data['photo'], caption=caption, reply_markup=markup)
     else:
-        bot.send_message(ADMIN_ID, caption, reply_markup=markup, parse_mode="Markdown")
+        bot.send_message(ADMIN_ID, caption, reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith(("acc_", "rej_")))
 def handle_ad(call):
     action, u_id = call.data.split('_')
-    u_id = int(u_id)
-    
-    original_text = call.message.caption if call.message.content_type == 'photo' else call.message.text
-    
     if action == "acc":
-        chan_markup = types.InlineKeyboardMarkup()
-        chan_markup.add(types.InlineKeyboardButton("💬 تواصل مع صاحب الإعلان", url=f"tg://user?id={u_id}"))
-        
-        final_msg = original_text.replace("🚨 إعلان جديد للمراجعة", "🌟 إعلان جديد 🌟")
-        
-        try:
-            if call.message.content_type == 'photo':
-                bot.send_photo(POST_CHANNEL, call.message.photo[-1].file_id, caption=final_msg, reply_markup=chan_markup, parse_mode="Markdown")
-            else:
-                bot.send_message(POST_CHANNEL, final_msg, reply_markup=chan_markup, parse_mode="Markdown")
-            
-            bot.send_message(u_id, "🎉 مبروك! تم قبول إعلانك ونشره في القناة.")
-            bot.answer_callback_query(call.id, "✅ تم النشر بنجاح")
-        except Exception as e:
-            bot.answer_callback_query(call.id, f"❌ خطأ في النشر: تأكد أن البوت أدمن", show_alert=True)
-    
-    elif action == "rej":
-        try:
-            bot.send_message(u_id, "❌ نعتذر منك، تم رفض إعلانك لمخالفته الشروط.")
-        except: pass
-        bot.answer_callback_query(call.id, "❌ تم الرفض")
-
+        bot.send_message(u_id, "🎉 تم قبول إعلانك!")
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
 if __name__ == "__main__":
-    print("🚀 البوت يعمل الآن بنظام الأيدي والقناتين والحماية...")
+    print("🚀 البوت يعمل الآن...")
     bot.infinity_polling()
