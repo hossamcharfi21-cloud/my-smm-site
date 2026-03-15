@@ -19,7 +19,6 @@ def home():
     return "I am alive!"
 
 def run():
-    # Render يستخدم المنفذ 8080 بشكل افتراضي أو يمكنك تركه يحدد تلقائياً
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
 
@@ -81,19 +80,22 @@ def handle_publish(message):
 def process_ad(message, ad_type):
     user_username = message.from_user.username
     user_id = message.from_user.id
-    contact_info = f"t.me/{user_username}" if user_username else f"tg://user?id={user_id}"
-    user_info = f"\n\n👤 الناشر: @{user_username or 'مخفي'}\n🆔 الأيدي: `{user_id}`"
+    
+    # تنسيق معلومات المستخدم باستخدام HTML لتجنب أخطاء الرموز
+    user_info = f"\n\n👤 الناشر: @{user_username or 'مخفي'}\n🆔 الأيدي: <code>{user_id}</code>"
     
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("✅ قبول ونشر", callback_data=f"acc_{user_id}_{user_username or 'no'}"),
+    # تقصير البيانات في callback_data لتجنب تجاوز الحد المسموح به (64 بايت)
+    u_name = user_username if user_username else "none"
+    markup.add(types.InlineKeyboardButton("✅ قبول ونشر", callback_data=f"acc_{user_id}_{u_name}"),
                types.InlineKeyboardButton("❌ رفض", callback_data=f"rej_{user_id}"))
 
     if message.content_type == 'photo':
-        caption = f"✨ **{ad_type}** ✨\n\n{message.caption}\n{user_info}"
-        bot.send_photo(ADMIN_ID, message.photo[-1].file_id, caption=caption, reply_markup=markup, parse_mode='Markdown')
+        caption = f"<b>✨ {ad_type} ✨</b>\n\n{message.caption or ''}{user_info}"
+        bot.send_photo(ADMIN_ID, message.photo[-1].file_id, caption=caption, reply_markup=markup, parse_mode='HTML')
     else:
-        text = f"✨ **{ad_type}** ✨\n\n{message.text}\n{user_info}"
-        bot.send_message(ADMIN_ID, text, reply_markup=markup, parse_mode='Markdown')
+        text = f"<b>✨ {ad_type} ✨</b>\n\n{message.text}{user_info}"
+        bot.send_message(ADMIN_ID, text, reply_markup=markup, parse_mode='HTML')
     
     bot.send_message(message.chat.id, "✅ تم إرسال طلبك للإدارة.")
 
@@ -105,29 +107,31 @@ def handle_admin_action(call):
     
     if action == "acc":
         u_username = data[2]
-        contact_url = f"https://t.me/{u_username}" if u_username != 'no' else f"tg://user?id={u_id}"
+        contact_url = f"https://t.me/{u_username}" if u_username != 'none' else f"tg://user?id={u_id}"
         chan_markup = types.InlineKeyboardMarkup()
         chan_markup.add(types.InlineKeyboardButton("📩 إضغط هنا للمراسلة", url=contact_url))
         
-        warning = "\n\n⚠️ **الإدارة غير مسؤولة عن أي تعامل خارج البوت.**"
+        warning = "\n\n⚠️ <b>الإدارة غير مسؤولة عن أي تعامل خارج البوت.</b>"
+        
+        # استخراج النص الأصلي
         content = call.message.caption if call.message.content_type == 'photo' else call.message.text
-        final_text = content.split("🆔 الأيدي:")[0] + warning
+        # تنظيف النص من معلومات الأيدي والناشر قبل النشر في القناة
+        final_text = content.split("👤 الناشر:")[0].strip() + warning
         
         try:
             if call.message.content_type == 'photo':
-                bot.send_photo(POST_CHANNEL_ID, call.message.photo[-1].file_id, caption=final_text, reply_markup=chan_markup, parse_mode='Markdown')
+                bot.send_photo(POST_CHANNEL_ID, call.message.photo[-1].file_id, caption=final_text, reply_markup=chan_markup, parse_mode='HTML')
             else:
-                bot.send_message(POST_CHANNEL_ID, final_text, reply_markup=chan_markup, parse_mode='Markdown')
+                bot.send_message(POST_CHANNEL_ID, final_text, reply_markup=chan_markup, parse_mode='HTML')
+            
             bot.send_message(int(u_id), "🎉 تم قبول ونشر إعلانك!")
         except Exception as e:
-            bot.send_message(ADMIN_ID, f"❌ خطأ في النشر: {e}")
+            bot.send_message(ADMIN_ID, f"❌ خطأ في النشر: {str(e)}")
             
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
 if __name__ == "__main__":
-    # تشغيل خادم الويب في الخلفية
     keep_alive()
-    # تشغيل البوت
     print("Bot is running...")
     bot.infinity_polling()
 
