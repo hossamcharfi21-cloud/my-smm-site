@@ -46,7 +46,7 @@ def start(message):
             clean_chan = chan.replace('@', '')
             markup.add(types.InlineKeyboardButton(f"📢 إشترك في {chan}", url=f"https://t.me/{clean_chan}"))
         markup.add(types.InlineKeyboardButton("✅ تم الاشتراك في الكل", callback_data="check_sub"))
-        bot.send_message(message.chat.id, "⚠️ يجب عليك الاشتراك في القنوات أولاً.", reply_markup=markup)
+        bot.send_message(message.chat.id, "⚠️ يجب عليك الاشتراك في القنوات أولاً لاستخدام البوت.", reply_markup=markup)
 
 @bot.callback_query_handler(func=lambda call: call.data == "check_sub")
 def check_callback(call):
@@ -55,7 +55,7 @@ def check_callback(call):
         try:
             bot.delete_message(call.message.chat.id, call.message.message_id)
         except: pass
-        bot.send_message(call.message.chat.id, "اختر من القائمة:", reply_markup=main_keyboard())
+        bot.send_message(call.message.chat.id, "شكراً لاشتراكك! اختر من القائمة:", reply_markup=main_keyboard())
     else:
         bot.answer_callback_query(call.id, "❌ لم تشترك بعد في القنوات!", show_alert=True)
 
@@ -63,45 +63,43 @@ def check_callback(call):
 def ask_details(message):
     if not is_subscribed(message.from_user.id): return start(message)
     user_data[message.chat.id] = {'type': message.text, 'text': '', 'photo': None, 'user_id': message.from_user.id, 'username': message.from_user.username}
-    msg = bot.send_message(message.chat.id, f"📝 أرسل تفاصيل الإعلان الآن:")
+    msg = bot.send_message(message.chat.id, f"📝 أرسل تفاصيل ({message.text}) الآن:")
     bot.register_next_step_handler(msg, get_text)
 
 def get_text(message):
-    if not message.text:
-        bot.send_message(message.chat.id, "⚠️ يرجى إرسال نص الإعلان.")
+    if not message.text or message.text.startswith('/'):
+        bot.send_message(message.chat.id, "⚠️ يرجى إرسال نص الإعلان بشكل صحيح.")
         return
     user_data[message.chat.id]['text'] = message.text
-    msg = bot.send_message(message.chat.id, "📸 أرسل صورة، أو أرسل كلمة /skip للتخطي:")
+    msg = bot.send_message(message.chat.id, "📸 أرسل صورة للإعلان، أو أرسل /skip للنشر بدون صورة:")
     bot.register_next_step_handler(msg, get_photo_or_skip)
 
 def get_photo_or_skip(message):
-    # فحص إذا كان المستخدم أرسل صورة أو اختار التخطي
     if message.content_type == 'photo':
         user_data[message.chat.id]['photo'] = message.photo[-1].file_id
-    elif message.text == '/skip':
-        user_data[message.chat.id]['photo'] = None
-    
     finish_ad(message)
 
 def finish_ad(message):
     data = user_data.get(message.chat.id)
     if not data: return
     
-    bot.send_message(message.chat.id, "✅ تم إرسال طلبك للإدارة.")
+    bot.send_message(message.chat.id, "✅ تم إرسال طلبك للإدارة للمراجعة.")
     
-    caption = f"🚨 **طلب جديد**\n\n📌 النوع: {data['type']}\n👤 الناشر: @{data.get('username', 'مخفي')}\n🆔 الأيدي: `{data['user_id']}`\n📝 النص:\n{data['text']}"
+    # تنسيق الرسالة التي تصل للأدمن مع الأيدي
+    caption = (f"🚨 **طلب جديد**\n\n"
+               f"📌 النوع: {data['type']}\n"
+               f"👤 الناشر: @{data.get('username', 'مخفي')}\n"
+               f"🆔 الأيدي: `{data['user_id']}`\n"
+               f"📝 النص:\n{data['text']}")
     
     markup = types.InlineKeyboardMarkup()
-    markup.add(types.InlineKeyboardButton("✅ قبول", callback_data=f"acc_{message.chat.id}"),
+    markup.add(types.InlineKeyboardButton("✅ قبول ونشر", callback_data=f"acc_{message.chat.id}"),
                types.InlineKeyboardButton("❌ رفض", callback_data=f"rej_{message.chat.id}"))
     
-    try:
-        if data['photo']:
-            bot.send_photo(ADMIN_ID, data['photo'], caption=caption, reply_markup=markup, parse_mode='Markdown')
-        else:
-            bot.send_message(ADMIN_ID, caption, reply_markup=markup, parse_mode='Markdown')
-    except Exception as e:
-        print(f"Error sending to admin: {e}")
+    if data['photo']:
+        bot.send_photo(ADMIN_ID, data['photo'], caption=caption, reply_markup=markup, parse_mode='Markdown')
+    else:
+        bot.send_message(ADMIN_ID, caption, reply_markup=markup, parse_mode='Markdown')
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith(("acc_", "rej_")))
 def handle_ad(call):
@@ -109,34 +107,31 @@ def handle_ad(call):
     u_id = int(u_id)
     
     if action == "acc":
-        # محاولة استخراج النص سواء من كابشن الصورة أو رسالة نصية
-        original_caption = call.message.caption if call.message.content_type == 'photo' else call.message.text
-        if original_caption:
-            clean_text = original_caption.replace("🚨 **طلب جديد**", "✨ **إعلان معتمد** ✨")
-            warning = "\n\n⚠️ **الإدارة غير مسؤولة عن أي تعامل خارج البوت.**"
+        original_msg = call.message
+        # استخراج النص من الكابشن أو الرسالة النصية
+        info_text = original_msg.caption if original_msg.content_type == 'photo' else original_msg.text
+        
+        # تجهيز النص النهائي للقناة
+        clean_text = info_text.replace("🚨 **طلب جديد**", "✨ **إعلان معتمد** ✨")
+        warning = "\n\n⚠️ **الإدارة غير مسؤولة عن أي تعامل خارج البوت.**"
+        final_post = clean_text + warning
+        
+        try:
+            if original_msg.content_type == 'photo':
+                bot.send_photo(POST_CHANNEL_ID, original_msg.photo[-1].file_id, caption=final_post, parse_mode='Markdown')
+            else:
+                bot.send_message(POST_CHANNEL_ID, final_post, parse_mode='Markdown')
+            bot.send_message(u_id, "🎉 مبروك! تم قبول إعلانك ونشره في القناة.")
+        except Exception as e:
+            bot.send_message(ADMIN_ID, f"❌ خطأ في النشر: تأكد أن البوت مشرف في القناة.\n{e}")
             
-            try:
-                if call.message.content_type == 'photo':
-                    bot.send_photo(POST_CHANNEL_ID, call.message.photo[-1].file_id, caption=clean_text + warning, parse_mode='Markdown')
-                else:
-                    bot.send_message(POST_CHANNEL_ID, clean_text + warning, parse_mode='Markdown')
-                bot.send_message(u_id, "🎉 تم قبول ونشر إعلانك!")
-            except Exception as e:
-                bot.send_message(ADMIN_ID, f"❌ خطأ في النشر: {e}")
-    
     elif action == "rej":
-        bot.send_message(u_id, "❌ نعتذر، تم رفض إعلانك.")
+        bot.send_message(u_id, "❌ نعتذر، تم رفض طلبك من قبل الإدارة.")
 
     try:
         bot.delete_message(call.message.chat.id, call.message.message_id)
     except: pass
 
-# --- تشغيل البوت بنظام حماية من التعارض ---
 if __name__ == "__main__":
-    try:
-        bot.remove_webhook()
-        print("Bot is starting...")
-        # استخدام إعدادات بولينج أكثر استقراراً للسيرفرات
-        bot.infinity_polling(skip_pending=True, timeout=60, long_polling_timeout=60)
-    except Exception as e:
-        print(f"Polling Error: {e}")
+    bot.remove_webhook()
+    bot.infinity_polling(skip_pending=True)
