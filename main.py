@@ -19,11 +19,13 @@ def home():
     return "I am alive!"
 
 def run():
-    port = int(os.environ.get("PORT", 8080))
+    # Render يطلب منك استخدام المنفذ من متغيرات البيئة
+    port = int(os.environ.get("PORT", 10000)) 
     app.run(host='0.0.0.0', port=port)
 
 def keep_alive():
     t = Thread(target=run)
+    t.daemon = True # جعل الخيط يعمل كخلفية لضمان عدم تعليق البرنامج
     t.start()
 
 # --- الإعدادات الأصلية لبوتك ---
@@ -81,11 +83,9 @@ def process_ad(message, ad_type):
     user_username = message.from_user.username
     user_id = message.from_user.id
     
-    # تنسيق معلومات المستخدم باستخدام HTML لتجنب أخطاء الرموز
     user_info = f"\n\n👤 الناشر: @{user_username or 'مخفي'}\n🆔 الأيدي: <code>{user_id}</code>"
     
     markup = types.InlineKeyboardMarkup()
-    # تقصير البيانات في callback_data لتجنب تجاوز الحد المسموح به (64 بايت)
     u_name = user_username if user_username else "none"
     markup.add(types.InlineKeyboardButton("✅ قبول ونشر", callback_data=f"acc_{user_id}_{u_name}"),
                types.InlineKeyboardButton("❌ رفض", callback_data=f"rej_{user_id}"))
@@ -113,9 +113,7 @@ def handle_admin_action(call):
         
         warning = "\n\n⚠️ <b>الإدارة غير مسؤولة عن أي تعامل خارج البوت.</b>"
         
-        # استخراج النص الأصلي
         content = call.message.caption if call.message.content_type == 'photo' else call.message.text
-        # تنظيف النص من معلومات الأيدي والناشر قبل النشر في القناة
         final_text = content.split("👤 الناشر:")[0].strip() + warning
         
         try:
@@ -131,7 +129,8 @@ def handle_admin_action(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
 if __name__ == "__main__":
+    # تشغيل Flask في الخلفية أولاً
     keep_alive()
     print("Bot is running...")
-    bot.infinity_polling()
-
+    # تشغيل البوت في الواجهة الأمامية
+    bot.infinity_polling(timeout=10, long_polling_timeout=5)
