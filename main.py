@@ -8,8 +8,26 @@ if not hasattr(collections, 'MutableMapping'):
 import telebot
 from telebot import types
 import os
+from flask import Flask
+from threading import Thread
 
-# --- الإعدادات ---
+# --- إعداد خادم الوهمي للبقاء حياً (Keep Alive) ---
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "I am alive!"
+
+def run():
+    # Render يستخدم المنفذ 8080 بشكل افتراضي أو يمكنك تركه يحدد تلقائياً
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+
+# --- الإعدادات الأصلية لبوتك ---
 API_TOKEN = '8536497984:AAFreSUHUUp12w_SNs2WH1RQO3KNcBhqmyk'
 ADMIN_ID = 6671521979 
 POST_CHANNEL_ID = '@BB_VBN' 
@@ -63,15 +81,10 @@ def handle_publish(message):
 def process_ad(message, ad_type):
     user_username = message.from_user.username
     user_id = message.from_user.id
-    
-    # تحضير بيانات التواصل (إذا كان اليوزر مخفي نستخدم الأيدي)
     contact_info = f"t.me/{user_username}" if user_username else f"tg://user?id={user_id}"
-    
     user_info = f"\n\n👤 الناشر: @{user_username or 'مخفي'}\n🆔 الأيدي: `{user_id}`"
     
-    # إرسال الطلب للأدمن مع رابط التواصل مخفي في زر القبول
     markup = types.InlineKeyboardMarkup()
-    # هنا نضع رابط التواصل داخل الـ callback_data لكي يحفظه البوت عند القبول
     markup.add(types.InlineKeyboardButton("✅ قبول ونشر", callback_data=f"acc_{user_id}_{user_username or 'no'}"),
                types.InlineKeyboardButton("❌ رفض", callback_data=f"rej_{user_id}"))
 
@@ -92,15 +105,12 @@ def handle_admin_action(call):
     
     if action == "acc":
         u_username = data[2]
-        # إنشاء زر التواصل للقناة
         contact_url = f"https://t.me/{u_username}" if u_username != 'no' else f"tg://user?id={u_id}"
         chan_markup = types.InlineKeyboardMarkup()
         chan_markup.add(types.InlineKeyboardButton("📩 إضغط هنا للمراسلة", url=contact_url))
         
         warning = "\n\n⚠️ **الإدارة غير مسؤولة عن أي تعامل خارج البوت.**"
         content = call.message.caption if call.message.content_type == 'photo' else call.message.text
-        
-        # تنظيف النص من معلومات الأيدي قبل النشر في القناة
         final_text = content.split("🆔 الأيدي:")[0] + warning
         
         try:
@@ -115,5 +125,9 @@ def handle_admin_action(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
 
 if __name__ == "__main__":
+    # تشغيل خادم الويب في الخلفية
+    keep_alive()
+    # تشغيل البوت
+    print("Bot is running...")
     bot.infinity_polling()
 
